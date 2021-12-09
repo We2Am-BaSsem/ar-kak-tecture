@@ -1,5 +1,5 @@
 <h1 align="center">
-  <string>ar-kak-tecture</strong>
+  ar-kak-tecture
 </h1>
 
 
