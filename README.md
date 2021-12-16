@@ -14,5 +14,3 @@ ar-kak-tecture
 ```
 > ## Then add existing files to add vhd files to your local project
 > #### unfortunately, You need to do this countinousley when you pull from the remote repository
-
-
