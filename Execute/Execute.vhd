@@ -146,8 +146,8 @@ BEGIN
     Control: ALUControl PORT MAP(opCode,ALUSelectors);
     Compute: ALUCompute PORT MAP(ALUSelectors, d1, d2, imm, ALUOutSig, cout);
     ToFlags: ALUToFlags PORT MAP(oldN, oldZ, ALUSelectors(1 DOWNTO 0), ALUOutSig, newN, newZ);
-    
+
     ALUOut <= ALUOutSig;
 
-    ALUExceptionSignal <= '1' WHEN ALUOutSig >= 2 ** 20 AND opCode(4 DOWNTO 1) = b"1000" ELSE '0';
+    ALUExceptionSignal <= '1' WHEN ALUOutSig >= x"FF00" AND opCode(4 DOWNTO 1) = b"1000" ELSE '0';
 END ALU;
