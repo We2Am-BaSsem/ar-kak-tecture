@@ -14,7 +14,7 @@ entity ControlUnit is
         pop,     
         fnJmp,   
         flushDecode,
-        flushExecute    :   out std_logic    --?
+        flushExecute    :   out std_logic  := '0' --?
     );
 end entity ControlUnit;
 

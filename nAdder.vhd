@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 
 
 ENTITY Nadder IS
-    GENERIC (n : integer := 32);
+    GENERIC (n : integer := 16);
 PORT 
 (
     a, b                 : IN std_logic_vector(n-1 DOWNTO 0) ;

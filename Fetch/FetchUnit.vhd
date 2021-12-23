@@ -3,7 +3,7 @@ USE ieee.std_logic_1164.ALL;
 USE IEEE.numeric_std.ALL;
 
 ENTITY FetchUnit is
-    generic (n :integer :=32);
+    generic (n :integer :=16);
     port(
     clk ,rst: IN std_logic;  -- value is rst when rst=1
     --address: IN std_logic_vector(15 DOWNTO 0);
