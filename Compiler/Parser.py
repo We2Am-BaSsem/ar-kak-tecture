@@ -1,37 +1,3 @@
-def toBinary(a):
-    return (
-        1
-        if a == "1"
-        else 2
-        if a == "2"
-        else 3
-        if a == "3"
-        else 4
-        if a == "4"
-        else 5
-        if a == "5"
-        else 6
-        if a == "6"
-        else 7
-        if a == "7"
-        else 8
-        if a == "8"
-        else 9
-        if a == "9"
-        else 10
-        if a == "a"
-        else 11
-        if a == "b"
-        else 12
-        if a == "c"
-        else 13
-        if a == "d"
-        else 14
-        if a == "e"
-        else 15
-    )
-
-
 opMap = {
     "nop": "00000",
     "hlt": "00001",
@@ -87,8 +53,27 @@ operandMap = {
     "rti": [],
 }
 
+progarmStart = 10
+stackException = 65
+memException = 129
+interupt1 = 257
+interupt2 = 513
+
 file = open("Compiler/Code1.txt", "r")
+memory = []
 code = []
+memory.append("{0:032b}".format(progarmStart)[15:-1])
+memory.append("{0:032b}".format(progarmStart)[31:15])
+memory.append("{0:032b}".format(stackException)[15:-1])
+memory.append("{0:032b}".format(stackException)[31:15])
+memory.append("{0:032b}".format(memException)[15:-1])
+memory.append("{0:032b}".format(memException)[31:15])
+memory.append("{0:032b}".format(interupt1)[15:-1])
+memory.append("{0:032b}".format(interupt1)[31:15])
+memory.append("{0:032b}".format(interupt2)[15:-1])
+memory.append("{0:032b}".format(interupt2)[31:15])
+print(memory)
+
 for line in file:
     line = line.replace(",", " ").lower()
     instructions = line.split()
@@ -108,16 +93,18 @@ for line in file:
                 codeLine[11:14] = "{0:03b}".format(int(instructions[i + 1][1]))
         else:
             immFlag = True
-            if instructions[i + 1][0] == "x":
-                print(str(bin(toBinary(instructions[i + 1][1:])))[2:])
-            if instructions[i + 1][0] == "d":
-                print(str(bin(int(instructions[i + 1][1:].replace('"',''))))[2:])
-
     if immFlag:
         codeLine[-1] = "1"
     code.append("".join(codeLine))
-    # print(instructions, codeLine)
-    # if immFlag:
+    if immFlag and instructions[-1][0] == "x":
+        code.append("{0:016b}".format(
+            int(instructions[i + 1][1:].replace('"', ''), 16)))
+    if immFlag and instructions[-1][0] == "d":
+        code.append("{0:016b}".format(
+            int(instructions[i + 1][1:].replace('"', ''))))
+
+code.append(opMap["hlt"] + "00000000000")
+# print(instructions, codeLine)
 
 # print(code)
 # print(len(code))
