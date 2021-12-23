@@ -37,7 +37,7 @@ begin
         port map(
         clk =>clk,
         rst =>rst,
-        value_to_add_pc =>x"0002", --todo integratee with whoever gonna decide the value to be added
+        value_to_add_pc =>x"0001", --todo integratee with whoever gonna decide the value to be added
         instruction_out =>fetched_instruction
         );
 
