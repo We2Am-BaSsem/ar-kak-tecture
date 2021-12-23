@@ -9,10 +9,10 @@ ENTITY PC_register IS
     PORT
     (
         clk,Rst : IN std_logic;
-        d : IN std_logic_vector(n-1 DOWNTO 0);
+        d : IN std_logic_vector(n-1 DOWNTO 0) := (OTHERS => '0');
         -- is_jmp : IN std_logic; -- to be revisited
         -- jmp_address:IN std_logic_vector(n-1 downto 0); --to be revisited
-        q : OUT std_logic_vector(n-1 DOWNTO 0)
+        q : OUT std_logic_vector(n-1 DOWNTO 0) := (OTHERS => '0')
     );
 END PC_register;
 
