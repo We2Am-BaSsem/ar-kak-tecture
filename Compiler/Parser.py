@@ -62,23 +62,24 @@ interupt2 = 513
 file = open("Compiler/Code1.txt", "r")
 memory = []
 code = []
-memory.append("{0:032b}".format(progarmStart)[15:-1])
-memory.append("{0:032b}".format(progarmStart)[31:15])
-memory.append("{0:032b}".format(stackException)[15:-1])
-memory.append("{0:032b}".format(stackException)[31:15])
-memory.append("{0:032b}".format(memException)[15:-1])
-memory.append("{0:032b}".format(memException)[31:15])
-memory.append("{0:032b}".format(interupt1)[15:-1])
-memory.append("{0:032b}".format(interupt1)[31:15])
-memory.append("{0:032b}".format(interupt2)[15:-1])
-memory.append("{0:032b}".format(interupt2)[31:15])
-print(memory)
+
+memory.append("{0:032b}".format(progarmStart)[0:16])
+memory.append("{0:032b}".format(progarmStart)[16:32])
+memory.append("{0:032b}".format(stackException)[0:16])
+memory.append("{0:032b}".format(stackException)[16:32])
+memory.append("{0:032b}".format(memException)[0:16])
+memory.append("{0:032b}".format(memException)[16:32])
+memory.append("{0:032b}".format(interupt1)[0:16])
+memory.append("{0:032b}".format(interupt1)[16:32])
+memory.append("{0:032b}".format(interupt2)[0:16])
+memory.append("{0:032b}".format(interupt2)[16:32])
+
 
 for line in file:
     line = line.replace(",", " ").lower()
     instructions = line.split()
     immFlag = False
-    # print(instructions)
+    
     operands = operandMap[instructions[0]]
     op = opMap[instructions[0]]
     codeLine = ["0"] * 16
@@ -95,25 +96,27 @@ for line in file:
             immFlag = True
     if immFlag:
         codeLine[-1] = "1"
-    code.append("".join(codeLine))
+    memory.append("".join(codeLine))
     if immFlag and instructions[-1][0] == "x":
-        code.append("{0:016b}".format(
-            int(instructions[i + 1][1:].replace('"', ''), 16)))
+        memory.append(
+            "{0:016b}".format(int(instructions[i + 1][1:].replace('"', ""), 16))
+        )
     if immFlag and instructions[-1][0] == "d":
-        code.append("{0:016b}".format(
-            int(instructions[i + 1][1:].replace('"', ''))))
+        memory.append("{0:016b}".format(int(instructions[i + 1][1:].replace('"', ""))))
 
-code.append(opMap["hlt"] + "00000000000")
-# print(instructions, codeLine)
+memory.append(opMap["hlt"] + "00000000000")
 
-# print(code)
-# print(len(code))
+
 
 outputFile = open("Compiler/InstructionMEmeory.mem", "w")
-for instruction in code:
-    outputFile.write(instruction)
-    outputFile.write("\n")
 
+outputFile.write("// memory data file (do not edit the following line - required for mem load use)\n")
+outputFile.write("// instance=/processor/fetch_unit/instructionmemory/InstructionMemory\n")
+outputFile.write("// format=mti addressradix=h dataradix=b version=1.0 wordsperline=1\n")
 
+for i in range(len(memory)):
+    outputFile.write(f"{hex(i)[2:]}: {memory[i]}\n")
+    
+    
 outputFile.close()
 file.close()
