@@ -10,7 +10,7 @@ entity ControlUnit is
         memRead,
         memToReg,
         memWrite,
-        RegWrite,
+        regWrite,
         pop,     
         fnJmp,   
         flushDecode,
@@ -23,16 +23,17 @@ architecture dataflow of ControlUnit is
 begin
     process(instruction)
     begin
-        memRead<='0';
-        memToReg<='0';
-        memWrite<='0';
-        RegWrite<='0';
-        pop<='0';     
-        fnJmp<='0';   
-        flushDecode<='0';
-        flushExecute<='0';
+        -- memRead<='0';
+        -- memToReg<='0';
+        -- memWrite<='0';
+        -- regWrite<='0';
+        -- pop<='0';     
+        -- fnJmp<='0';   
+        -- flushDecode<='0';
+        -- flushExecute<='0'; 
+        -- for some reason, if these are uncommented, 1 are output as X, will change to with Select 
 
-        if instruction = "00000" 
+        if (instruction = "00000" 
             or instruction = "00001" 
             or instruction = "00010"
             or instruction = "00101"
@@ -40,9 +41,9 @@ begin
             or instruction = "11000"
             or instruction = "11001"
             or instruction = "11010"
-            or instruction = "11011" then
+            or instruction = "11011" )then
                 out_vector <= "000000";           
-        elsif instruction = "00011"
+        elsif (instruction = "00011"
             or instruction = "00100"
             or instruction = "00110"
             or instruction = "01000"
@@ -50,18 +51,18 @@ begin
             or instruction = "01010"
             or instruction = "01011"
             or instruction = "01100"
-            or instruction = "10010" then
+            or instruction = "10010" )then
                 out_vector <= "000100";
-        elsif instruction = "10001" then
+        elsif (instruction = "10001") then
             out_vector <= "000110";
-        elsif instruction = "10011" then
+        elsif (instruction = "10011") then
             out_vector <= "110100";
-        elsif instruction = "10100" then
+        elsif (instruction = "10100")then
             out_vector <= "001000";
-        elsif instruction = "11100" then
+        elsif (instruction = "11100") then
             out_vector <= "000001";
-        elsif instruction = "11101"
-            or instruction = "11111" then
+        elsif (instruction = "11101"
+            or instruction = "11111") then
                 out_vector <= "000011";
         else out_vector <= "100001"; 
         end if;
@@ -70,7 +71,7 @@ begin
     memRead<=out_vector(5);
     memToReg<=out_vector(4);
     memWrite<=out_vector(3);
-    RegWrite<=out_vector(2);
+    regWrite<=out_vector(2);
     pop<=out_vector(1);     
     fnJmp<=out_vector(0);       
     
