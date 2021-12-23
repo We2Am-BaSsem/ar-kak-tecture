@@ -10,8 +10,8 @@ ENTITY Memory IS
         address : IN STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
         datain : IN STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
         pc : IN STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        SP : INOUT STD_LOGIC_VECTOR(31 DOWNTO 0) := STD_LOGIC_VECTOR'(x"000FFFFF");
-        InvalidMemoryExceptionSignal, EmptyStackExceptionSignal : INOUT STD_LOGIC := '0';
+        SP : IN STD_LOGIC_VECTOR(31 DOWNTO 0) := STD_LOGIC_VECTOR'(x"000FFFFF");
+        InvalidMemoryExceptionSignal, EmptyStackExceptionSignal : IN STD_LOGIC := '0';
         stackout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         dataout : OUT STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0')
     );
@@ -29,17 +29,17 @@ BEGIN
             --     InvalidMemoryExceptionSignal <= '1';
             --     -- REPORT "Invalid Address" SEVERITY warning;
             -- ELS
-            IF popsignal = '1' AND ((SP + 1 >= 2 ** 20) OR (controlsignal = '1' AND SP + 2 >= 2 ** 20)) THEN
-                EmptyStackExceptionSignal <= '1';
+            IF EmptyStackExceptionSignal = '1' THEN
+                -- EmptyStackExceptionSignal <= '1';
                 -- REPORT "Pop Empty Stack" SEVERITY warning;
             ELSE
                 IF popsignal = '1' THEN
                     IF (controlsignal = '1') THEN
-                        stackout <= ram(to_integer(unsigned((SP + 2)))) & ram(to_integer(unsigned((SP + 1))));
-                        SP <= SP + 2;
+                        stackout <= ram(to_integer(unsigned((SP)))) & ram(to_integer(unsigned((SP - 1))));
+                        -- SP <= SP + 2;
                     ELSE
-                        dataout <= ram(to_integer(unsigned((SP + 1))));
-                        SP <= SP + 1;
+                        dataout <= ram(to_integer(unsigned((SP))));
+                        -- SP <= SP + 1;
                     END IF;
                 ELSIF re = '1' THEN
                     tempAddress := X"0000" & address;
@@ -51,18 +51,18 @@ BEGIN
             -- IF (address(31 DOWNTO 16) /= STD_LOGIC_VECTOR'(x"0000")) THEN
             --     InvalidMemoryExceptionSignal <= '0';
             -- ELS
-            IF EmptyStackExceptionSignal = '1' THEN
-                EmptyStackExceptionSignal <= '0';
-            END IF;
+            -- IF EmptyStackExceptionSignal = '1' THEN
+            --     EmptyStackExceptionSignal <= '0';
+            -- END IF;
 
             IF (pushpsignal = '1') THEN
                 IF (controlsignal = '1') THEN
                     ram(to_integer(unsigned((SP)))) <= pc(31 DOWNTO 16);
                     ram(to_integer(unsigned((SP - 1)))) <= pc(15 DOWNTO 0);
-                    SP <= SP - 2;
+                    -- SP <= SP - 2;
                 ELSE
                     ram(to_integer(unsigned((SP)))) <= datain;
-                    SP <= SP - 1;
+                    -- SP <= SP - 1;
                 END IF;
             ELSIF we = '1' THEN
                 tempAddress := X"0000" & address;
