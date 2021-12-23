@@ -3,7 +3,7 @@ USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.numeric_std.all;
 
 ENTITY InstructionMemory IS
-	generic (n :integer :=32);
+	generic (n :integer :=16);
 	PORT(
 		--connect it to tri-state buffer to put its data on bus
 		clk : IN std_logic;

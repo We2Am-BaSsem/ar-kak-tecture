@@ -5,7 +5,7 @@ use ieee.std_logic_1164.all;
 use  ieee.std_logic_unsigned;
 
 ENTITY PC_register IS
-    GENERIC ( n : integer := 32);
+    GENERIC ( n : integer := 16);
     PORT
     (
         clk,Rst : IN std_logic;
