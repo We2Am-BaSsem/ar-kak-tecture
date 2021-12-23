@@ -69,6 +69,18 @@ begin
             readData2=>readData2_s  
         );
 
+    ALU : entity work.ALU(ALU)
+        port map(
+            oldN => '0',
+            oldZ => '0',
+            opCode => fetched_instruction(15 downto 11),
+            d1 => readData1_s,
+            d2 => readData2_s,
+            imm => (OTHERS => '0')
+        );
+
+
+
 
 
 
