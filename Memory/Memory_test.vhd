@@ -167,7 +167,7 @@ BEGIN
 		pushpsignal => testpushpsignal, popsignal => testpoppsignal, controlsignal => testcontrolsignal,
 		--  SP => testSP,
 		stackout => teststackoutput, pc => testpc,
-		InvalidMemoryExceptionSignal => testException1, EmptyStackExceptionSignal => testException2
+		EmptyStackExceptionSignal => testException2
 		);
 
 END testbench_Memory;
