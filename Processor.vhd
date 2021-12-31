@@ -1,6 +1,7 @@
 LIBRARY IEEE;
-USE IEEE.std_logic_1164.ALL;
+USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.numeric_std.ALL;
+USE IEEE.std_logic_unsigned.ALL;
 
 ENTITY Processor IS
     GENERIC (n : INTEGER := 16);
@@ -14,7 +15,12 @@ END ENTITY Processor;
 
 ARCHITECTURE arKAKtectureProcessor OF Processor IS
 
-    SIGNAL fetched_instruction : STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
+    SIGNAL fetched_instruction : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL pc_reg_out_sig : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL adder_output_sig : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    signal cout_sig   : std_logic;
+    signal temp_zero : std_logic := '0';
+    
     ------------------------------------------------------------------------
     SIGNAL memRead_s,
     memToReg_s,
@@ -39,13 +45,25 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
     SIGNAL WriteBackData_s : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
 BEGIN
 
+
+    -----------------------------------Fetch unit--------------------------------
     fetch_unit : ENTITY work.FetchUnit(a_FetchUnit)
         PORT MAP(
             clk => clk,
             rst => rst,
-            value_to_add_pc => x"0001", --todo integratee with whoever gonna decide the value to be added
-            instruction_out => fetched_instruction
+            adder_output =>adder_output_sig,
+            instruction_out => fetched_instruction,
+            pc_reg_out =>pc_reg_out_sig
         );
+    pcAdder : entity work.PCNadder(PCarch_Nadder)
+        port map(
+            a                    =>pc_reg_out_sig,
+            value_to_add_bit     =>fetched_instruction(16),
+            cin                  =>temp_zero,
+            s                    =>adder_output_sig,
+            cout                 =>cout_sig
+        );
+    --------------------------------------------------------------------------
     control_unit : ENTITY work.ControlUnit(dataflow)
         PORT MAP(
             instruction => fetched_instruction(15 DOWNTO 11),

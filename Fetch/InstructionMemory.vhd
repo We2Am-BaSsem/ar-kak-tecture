@@ -1,6 +1,7 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
-USE IEEE.numeric_std.all;
+USE IEEE.numeric_std.ALL;
+USE IEEE.std_logic_unsigned.ALL;
 
 ENTITY InstructionMemory IS
 	generic (n :integer :=16);
@@ -8,9 +9,9 @@ ENTITY InstructionMemory IS
 		--connect it to tri-state buffer to put its data on bus
 		clk : IN std_logic;
 		--we  : IN std_logic; --write enable, memory is over-written by data from bus
-		address : IN  std_logic_vector(n-1 DOWNTO 0) := (OTHERS => '0');
-		--datain  : IN  std_logic_vector(n-1 DOWNTO 0);
-		dataout : OUT std_logic_vector(n-1 DOWNTO 0) := (OTHERS => '0'));
+		address : IN  std_logic_vector(31 DOWNTO 0);
+		dataout : OUT std_logic_vector(31 DOWNTO 0) 
+		);
 END ENTITY InstructionMemory;
 
 ARCHITECTURE arch_InstructionMemory OF InstructionMemory IS
@@ -23,10 +24,8 @@ ARCHITECTURE arch_InstructionMemory OF InstructionMemory IS
 		PROCESS(clk) IS
 			BEGIN
 				IF rising_edge(clk) THEN  
-					--IF we = '1' THEN
-					--	InstructionMemory(to_integer(unsigned(address))) <= datain;
-					--END IF;
-					dataout <= InstructionMemory(to_integer(unsigned(address)));
+					
+					dataout <= InstructionMemory(to_integer(unsigned(address))) & InstructionMemory(to_integer(unsigned(address))+1);
 				END IF;
 		END PROCESS;
 END arch_InstructionMemory;
