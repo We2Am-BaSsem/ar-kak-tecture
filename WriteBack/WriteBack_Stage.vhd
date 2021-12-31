@@ -9,7 +9,7 @@ ENTITY WriteBack_Stage IS -- single bit adder
     );
 END WriteBack_Stage;
 
-ARCHITECTURE WriteBack OF WriteBack_Stage IS
+ARCHITECTURE WriteBack_Stage OF WriteBack_Stage IS
 BEGIN
     PROCESS (clk) IS
     BEGIN
@@ -21,7 +21,11 @@ BEGIN
             END IF;
         END IF;
         -- IF falling_edge(clk) THEN
-
+        --     IF (MemtoReg = '0') THEN
+        --         WBD <= ALUout;
+        --     ELSE
+        --         WBD <= PopD;
+        --     END IF;
         -- END IF;
     END PROCESS;
-END WriteBack;
+END WriteBack_Stage;
