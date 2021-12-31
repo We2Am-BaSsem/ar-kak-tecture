@@ -31,8 +31,12 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
     readData2_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
     --outputs od register file  --todo: integrate with execution
     ---------------------------------------------------------------------------
+    SIGNAL ALUOut_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    ---------------------------------------------------------------------------
     SIGNAL stackOut_s : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL memOut_s : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
+    ---------------------------------------------------------------------------
+    SIGNAL WriteBackData_s : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
 BEGIN
 
     fetch_unit : ENTITY work.FetchUnit(a_FetchUnit)
@@ -63,7 +67,7 @@ BEGIN
             readAddr1 => fetched_instruction(7 DOWNTO 5),
             readAddr2 => fetched_instruction(4 DOWNTO 2),
             writeAddr => fetched_instruction(10 DOWNTO 8),
-            writeData => (OTHERS => '0'), -----to do:integrate  
+            writeData => WriteBackData_s,
             regWrite => regWrite_s,
             readData1 => readData1_s,
             readData2 => readData2_s
@@ -71,12 +75,14 @@ BEGIN
 
     ALU : ENTITY work.ALU(ALU)
         PORT MAP(
+            clk => clk,
             oldN => '0',
             oldZ => '0',
             opCode => fetched_instruction(15 DOWNTO 11),
             d1 => readData1_s,
             d2 => readData2_s,
-            imm => (OTHERS => '0')
+            imm => (OTHERS => '0'),
+            ALUOut => ALUOut_s
         );
 
     Memory : ENTITY work.Memory_Stage(Memory_Stage)
@@ -87,7 +93,7 @@ BEGIN
             we => memWrite_s, re => memRead_s, pushpsignal => '0', popsignal => pop_s, controlsignal => fnJmp_s,
 
             -- todo: output from ALU(ALUOut)
-            address => x"0000",
+            address => ALUOut_s,
 
             -- todo : Rsrc1 IN CASE OF (push, pop, call)
             -- Rsrc1 IN CASE OF (STD)
@@ -96,5 +102,12 @@ BEGIN
 
             EmptyStackExceptionSignal => memEx_s,
             stackout => stackOut_s, dataout => memOut_s
+        );
+
+    WriteBack : ENTITY work.WriteBack_Stage(WriteBack_Stage)
+        PORT MAP(
+            MemtoReg => memToReg_s, clk => clk,
+            PopD => memOut_s, ALUout => ALUOut_s,
+            WBD => WriteBackData_s
         );
 END ARCHITECTURE arKAKtectureProcessor;
