@@ -56,17 +56,6 @@ begin
         third_mux<=second_mux;
 
 
-
-
-
-    
-
-    
-
-
-
-
-
 end architecture
 
 
