@@ -23,7 +23,7 @@ ARCHITECTURE arch_InstructionMemory OF InstructionMemory IS
 
 	
 	BEGIN
-		PROCESS(clk) IS
+		PROCESS(clk,rst) IS
 			BEGIN
 				beginning_address_of_operations<=InstructionMemory(0) & InstructionMemory(1);
 				if rising_edge(clk) THEN  
