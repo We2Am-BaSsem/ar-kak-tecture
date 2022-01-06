@@ -40,11 +40,11 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
     ---------------------------------------------------------------------------
     SIGNAL ALUOut_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
     ---------------------------------------------------------------------------
-    SIGNAL ExMemBufferInput, ExMemBufferOutput : STD_LOGIC_VECTOR(128 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL ExMemBufferInput, ExMemBufferOutput : STD_LOGIC_VECTOR(127 DOWNTO 0) := (OTHERS => '0');
     SIGNAL stackOut_s : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL memOut_s : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
     ---------------------------------------------------------------------------
-    SIGNAL MemWBBufferInput, MemWBBufferOutput : STD_LOGIC_VECTOR(128 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL MemWBBufferInput, MemWBBufferOutput : STD_LOGIC_VECTOR(127 DOWNTO 0) := (OTHERS => '0');
     SIGNAL WriteBackData_s : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
 BEGIN
     -----------------------------------Fetch unit--------------------------------
