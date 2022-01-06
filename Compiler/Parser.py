@@ -61,14 +61,14 @@ memException = 129
 interupt1 = 257
 interupt2 = 513
 
-file = open(os.getcwd() + "/TwoOperand.asm", "r")
+file = open(os.getcwd() + "/OneOperand.asm", "r")
 memory = ["0000000000000000"] * 2 ** 12
 code = []
 
 
 def memoryInserion(address, index):
-    memory[index] = "{0:032b}".format(int(address, 16))[16:32]
-    memory[index + 1] = "{0:032b}".format(int(address, 16))[0:16]
+    memory[index] = "{0:032b}".format(int(address, 16))[0:16]
+    memory[index + 1] = "{0:032b}".format(int(address, 16))[16:32]
 
 
 address = 0
@@ -130,7 +130,7 @@ for line in file:
         memory[address] = "{0:016b}".format(int(instructions[i + 1], 16))
         address += 1
 
-outputFile = open(os.getcwd() + "/TwoOperandMemeory.mem", "w")
+outputFile = open(os.getcwd() + "/OneOperandMemeory.mem", "w")
 
 outputFile.write(
     "// memory data file (do not edit the following line - required for mem load use)\n"
