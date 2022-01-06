@@ -10,6 +10,7 @@ ENTITY PC_register IS
     (
         clk : IN std_logic:= '0';
         Rst : IN std_logic := '0';
+        beginning_address: in std_logic_vector(31 downto 0);
         d : IN std_logic_vector(n-1 DOWNTO 0) := (OTHERS => '0');
         q : OUT std_logic_vector(n-1 DOWNTO 0) := (OTHERS => '0')
     );
@@ -20,8 +21,8 @@ ARCHITECTURE arch_PC_register OF PC_register
         BEGIN
         PROCESS (clk,Rst)
             BEGIN
-                IF Rst = '1' THEN
-                    q <= (OTHERS=>'0');
+                IF Rst = '1' THEN --instuction out will be the address of the beginning of the instuctions
+                    q <= beginning_address;
                 ELSIF rising_edge(clk)  THEN 
                     q <= d;--std_logic_vector(unsigned(d)+unsigned(value_to_add));
                 END IF;

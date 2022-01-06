@@ -8,8 +8,10 @@ ENTITY InstructionMemory IS
 	PORT(
 		--connect it to tri-state buffer to put its data on bus
 		clk : IN std_logic;
+		rst : IN std_logic;
 		--we  : IN std_logic; --write enable, memory is over-written by data from bus
 		address : IN  std_logic_vector(31 DOWNTO 0);
+		beginning_address_of_operations: OUT std_logic_vector(31 DOWNTO 0);
 		dataout : OUT std_logic_vector(31 DOWNTO 0) 
 		);
 END ENTITY InstructionMemory;
@@ -23,7 +25,8 @@ ARCHITECTURE arch_InstructionMemory OF InstructionMemory IS
 	BEGIN
 		PROCESS(clk) IS
 			BEGIN
-				IF rising_edge(clk) THEN  
+				beginning_address_of_operations<=InstructionMemory(0) & InstructionMemory(1);
+				if rising_edge(clk) THEN  
 					
 					dataout <= InstructionMemory(to_integer(unsigned(address))) & InstructionMemory(to_integer(unsigned(address))+1);
 				END IF;

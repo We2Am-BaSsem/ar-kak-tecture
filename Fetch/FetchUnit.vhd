@@ -18,10 +18,13 @@ end entity FetchUnit;
 architecture a_FetchUnit of FetchUnit is 
 
 SIGNAL pc_reg_output : std_logic_vector(31 DOWNTO 0);
+
+signal beginning_address_sig: std_logic_vector(31 downto 0);
 --SIGNAL adder_output: std_logic_vector(31 DOWNTO 0);
 SIGNAL adder_outputCarryout: std_logic;
 signal add_value:std_logic_vector(31 DOWNTO 0);
 signal not_clk: std_logic ;
+
 
 
     begin
@@ -29,13 +32,16 @@ signal not_clk: std_logic ;
         instructionmemory: entity work.InstructionMemory(arch_InstructionMemory) 
         port map(
             clk => clk,
+            rst     => rst,
             address => pc_reg_output,
-            dataout => instruction_out
+            dataout => instruction_out,
+            beginning_address_of_operations=>beginning_address_sig
             );
             pc_reg : entity work.PC_register(arch_PC_register)
             port map(
                 clk => not_clk ,
                 Rst => rst,
+                beginning_address=>beginning_address_sig,
                 d=>adder_output,
                 q=>pc_reg_output
                 );

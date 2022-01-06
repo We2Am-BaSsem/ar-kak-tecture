@@ -59,7 +59,7 @@ BEGIN
     -----------------------------------Fetch unit--------------------------------
     fetch_unit : ENTITY work.FetchUnit(a_FetchUnit)
         PORT MAP(
-            clk => clk,
+            clk => clk, 
             rst => rst,
             adder_output => adder_output_sig,
             instruction_out => fetched_instruction_buffer_input_fetchstage, -- this is the fetched instruction
