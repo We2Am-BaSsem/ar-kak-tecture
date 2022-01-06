@@ -1,3 +1,5 @@
+import os
+
 opMap = {
     "nop": "00000",
     "hlt": "00001",
@@ -59,27 +61,53 @@ memException = 129
 interupt1 = 257
 interupt2 = 513
 
-file = open("Compiler/Code1.txt", "r")
-memory = []
+file = open(os.getcwd() + "/OneOperand.asm", "r")
+memory = ["0000000000000000"] * 2 ** 12
 code = []
 
-memory.append("{0:032b}".format(progarmStart)[0:16])
-memory.append("{0:032b}".format(progarmStart)[16:32])
-memory.append("{0:032b}".format(stackException)[0:16])
-memory.append("{0:032b}".format(stackException)[16:32])
-memory.append("{0:032b}".format(memException)[0:16])
-memory.append("{0:032b}".format(memException)[16:32])
-memory.append("{0:032b}".format(interupt1)[0:16])
-memory.append("{0:032b}".format(interupt1)[16:32])
-memory.append("{0:032b}".format(interupt2)[0:16])
-memory.append("{0:032b}".format(interupt2)[16:32])
+
+def memoryInserion(address, index):
+    memory[index] = "{0:032b}".format(int(address, 16))[16:32]
+    memory[index + 1] = "{0:032b}".format(int(address, 16))[0:16]
 
 
+address = 0
 for line in file:
+    if line[0] == "#" or line == "\n":
+        continue
+    if "#" in line:
+        line = line[0 : line.index("#")]
+    if ".ORG" in line:
+        if any(
+            ext in line
+            for ext in [
+                ".ORG 0 ",
+                ".ORG 2 ",
+                ".ORG 4 ",
+                ".ORG 6 ",
+                ".ORG 8 ",
+                ".ORG 0\n",
+                ".ORG 2\n",
+                ".ORG 4\n",
+                ".ORG 6\n",
+                ".ORG 8\n",
+            ]
+        ):
+            memoryInserion(file.__next__(), int(line[5:]))
+            continue
+        else:
+            line = line.replace("\n", "")
+            address = int("{0:0.0f}".format(int(line[5:], 16)))
+            print(line[5:])
+            print("{0:0.0f}".format(int(line[5:], 16)))
+            continue
+
     line = line.replace(",", " ").lower()
     instructions = line.split()
     immFlag = False
-    
+
+    print(instructions)
+
     operands = operandMap[instructions[0]]
     op = opMap[instructions[0]]
     codeLine = ["0"] * 16
@@ -96,27 +124,27 @@ for line in file:
             immFlag = True
     if immFlag:
         codeLine[-1] = "1"
-    memory.append("".join(codeLine))
-    if immFlag and instructions[-1][0] == "x":
-        memory.append(
-            "{0:016b}".format(int(instructions[i + 1][1:].replace('"', ""), 16))
-        )
-    if immFlag and instructions[-1][0] == "d":
-        memory.append("{0:016b}".format(int(instructions[i + 1][1:].replace('"', ""))))
+    memory[address] = "".join(codeLine)
+    address += 1
+    if immFlag:
+        memory[address] = "{0:016b}".format(int(instructions[i + 1], 16))
+        address += 1
 
-memory.append(opMap["hlt"] + "00000000000")
+outputFile = open(os.getcwd() + "/InstructionMemeory.mem", "w")
 
-
-
-outputFile = open("Compiler/InstructionMEmeory.mem", "w")
-
-outputFile.write("// memory data file (do not edit the following line - required for mem load use)\n")
-outputFile.write("// instance=/processor/fetch_unit/instructionmemory/InstructionMemory\n")
-outputFile.write("// format=mti addressradix=h dataradix=b version=1.0 wordsperline=1\n")
+outputFile.write(
+    "// memory data file (do not edit the following line - required for mem load use)\n"
+)
+outputFile.write(
+    "// instance=/processor/fetch_unit/instructionmemory/InstructionMemory\n"
+)
+outputFile.write(
+    "// format=mti addressradix=h dataradix=b version=1.0 wordsperline=1\n"
+)
 
 for i in range(len(memory)):
     outputFile.write(f"{hex(i)[2:]}: {memory[i]}\n")
-    
-    
+
+
 outputFile.close()
 file.close()
