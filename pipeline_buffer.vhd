@@ -29,7 +29,7 @@ BEGIN
         IF en = '1' THEN
             IF rst = '1' THEN
                 Q <= (OTHERS => '0');
-            ELSIF falling_edge(clk) THEN
+            ELSIF rising_edge(clk) THEN
                 Q <= D;
             END IF;
         END IF;
