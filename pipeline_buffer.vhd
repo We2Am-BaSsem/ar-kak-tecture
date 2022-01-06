@@ -12,7 +12,7 @@ ENTITY pipeline_buffer IS
     -- ex_mem_buffer:
     --  memtoreg(1bit), memwrite(1bit),memread(1bit),pop(1bit),push(1bit),fnjump(1bit) => 6 bits
     --  ALUout(16bit), DataToStore(D1)(16bit), PC(32bit) => 64bits
-    --  Used 256-bits
+    --  Used 70-bits
     -------------------------------------------------------------------------------------------
     -- mem_wb_buffer:
     --  memtoreg(1bit) => 1 bit
