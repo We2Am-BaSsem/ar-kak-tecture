@@ -4,7 +4,7 @@ USE IEEE.numeric_std.ALL;
 USE IEEE.std_logic_unsigned.ALL;
 
 ENTITY InstructionMemory IS
-	generic (n :integer :=16);
+	
 	PORT(
 		--connect it to tri-state buffer to put its data on bus
 		clk : IN std_logic;
@@ -16,7 +16,7 @@ END ENTITY InstructionMemory;
 
 ARCHITECTURE arch_InstructionMemory OF InstructionMemory IS
 
-	TYPE InstructionMemory_type IS ARRAY(0 TO 2**6-1) OF std_logic_vector(n-1 DOWNTO 0);
+	TYPE InstructionMemory_type IS ARRAY(0 TO 2**24-1) OF std_logic_vector(15 DOWNTO 0);
 	SIGNAL InstructionMemory : InstructionMemory_type := (OTHERS => (OTHERS => '0'));
 
 	
