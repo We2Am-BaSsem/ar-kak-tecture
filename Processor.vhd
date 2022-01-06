@@ -16,12 +16,19 @@ END ENTITY Processor;
 ARCHITECTURE arKAKtectureProcessor OF Processor IS
 
     SIGNAL fetched_instruction : STD_LOGIC_VECTOR(31 DOWNTO 0);
-    SIGNAL fetched_instruction_buffer_input : STD_LOGIC_VECTOR(31 DOWNTO 0);
-    SIGNAL fetched_instruction_buffer_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL pc_reg_out_sig : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL adder_output_sig : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL cout_sig : STD_LOGIC;
     SIGNAL temp_zero : STD_LOGIC := '0';
+
+    
+
+    SIGNAL fetched_instruction_buffer_input_fetchstage : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL fetched_instruction_buffer_output_fetchstage : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    
+    
+    SIGNAL fetched_instruction_buffer_output_decodestage : STD_LOGIC_VECTOR(31 DOWNTO 0);
+
 
     ------------------------------------------------------------------------
     SIGNAL memRead_s,
@@ -55,27 +62,27 @@ BEGIN
             clk => clk,
             rst => rst,
             adder_output => adder_output_sig,
-            instruction_out => fetched_instruction_buffer_input,
+            instruction_out => fetched_instruction_buffer_input_fetchstage, -- this is the fetched instruction
             pc_reg_out => pc_reg_out_sig
         );
     pcAdder : ENTITY work.PCNadder(PCarch_Nadder)
         PORT MAP(
             a => pc_reg_out_sig,
-            value_to_add_bit => fetched_instruction_buffer_input(16),
+            value_to_add_bit => fetched_instruction_buffer_input_fetchstage(16),
             cin => temp_zero,
             s => adder_output_sig,
             cout => cout_sig
         );
 
 
-        fetched_instruction_buffer : ENTITY work.pipeline_buffer(pipeline_buffer)
+        fetched_instruction_buffer_fetchstage : ENTITY work.pipeline_buffer(pipeline_buffer)
         generic map (
             n => 32
         )
 
         PORT MAP(
-            D => fetched_instruction_buffer_input,
-            Q => fetched_instruction_buffer_output,
+            D => fetched_instruction_buffer_input_fetchstage,
+            Q => fetched_instruction_buffer_output_fetchstage,
             clk => clk, 
             rst => rst,
             en => '1'
@@ -84,7 +91,7 @@ BEGIN
     -----------------------------------Decode--------------------------------
     control_unit : ENTITY work.ControlUnit(dataflow)
         PORT MAP(
-            instruction => fetched_instruction_buffer_output(15 DOWNTO 11),
+            instruction => fetched_instruction_buffer_output_fetchstage(15 DOWNTO 11),
             aluEx => '0', --todo
             memEx => memEx_s,
             memRead => memRead_s,
@@ -100,21 +107,35 @@ BEGIN
     register_file : ENTITY work.RegisterFile(Behavioral)
         PORT MAP(
             --each input is a slice of the opcode coming from the fetch stage
-            readAddr1 => fetched_instruction_buffer_output(7 DOWNTO 5),
-            readAddr2 => fetched_instruction_buffer_output(4 DOWNTO 2),
-            writeAddr => fetched_instruction_buffer_output(10 DOWNTO 8),
+            readAddr1 => fetched_instruction_buffer_output_fetchstage(7 DOWNTO 5),
+            readAddr2 => fetched_instruction_buffer_output_fetchstage(4 DOWNTO 2),
+            writeAddr => fetched_instruction_buffer_output_fetchstage(10 DOWNTO 8),
             writeData => WriteBackData_s,
             regWrite => regWrite_s,
             readData1 => readData1_s,
             readData2 => readData2_s
         );
 
+    --fetched instruction memory for this stage
+    fetched_instruction_buffer_decodestage : ENTITY work.pipeline_buffer(pipeline_buffer)
+    generic map (
+        n => 32
+    )
+
+    PORT MAP(
+        D => fetched_instruction_buffer_output_fetchstage,
+        Q => fetched_instruction_buffer_output_decodestage,
+        clk => clk, 
+        rst => rst,
+        en => '1'
+    );
+
     -----------------------------------Execute--------------------------------
     ALU : ENTITY work.ALU(ALU)
         PORT MAP(
             oldN => '0',
             oldZ => '0',
-            opCode => fetched_instruction_buffer_output(15 DOWNTO 11),
+            opCode => fetched_instruction_buffer_output_decodestage(15 DOWNTO 11),
             d1 => readData1_s,
             d2 => readData2_s,
             imm => (OTHERS => '0'),
