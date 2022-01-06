@@ -116,7 +116,7 @@ BEGIN
             readData2 => readData2_s
         );
 
-    --fetched instruction memory for this stage
+    --fetched instruction buffer for this stage
     fetched_instruction_buffer_decodestage : ENTITY work.pipeline_buffer(pipeline_buffer)
     generic map (
         n => 32
