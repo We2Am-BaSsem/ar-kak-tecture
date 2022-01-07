@@ -14,7 +14,8 @@ instruction13to11               : IN std_logic_vector(2 downto 0);
 
 FlushDecode,FlushEx,XofSP,POP,FnJMP : IN std_logic;
 
-nextPC                          : OUT  std_logic_vector(31 downto 0)
+nextPC                          : OUT  std_logic_vector(31 downto 0),
+pcChanged                     : out  std_logic
 );
 end branching;
 
@@ -41,9 +42,9 @@ begin
 
 
     --here should be the code of secondmux
-    if(Flushdecode="") and(FlushEx="") then
+    if(Flushdecode="1") and(FlushEx="0") then
         second_mux<=ALUEx
-    else if (Flushdecode="") and(FlushEx="")then
+    else if (Flushdecode="1") and(FlushEx="1")then
         second_mux<=StackEx
     else 
     second_mux<=first_mux;
@@ -55,6 +56,12 @@ begin
     else
         third_mux<=second_mux;
 
+    nextPC<=third_mux;
+
+    if(nextPC=PCregOutput)then
+        pcChanged<='0';
+    else 
+    pcChanged<='1';
 
 end architecture
 

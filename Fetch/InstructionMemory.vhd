@@ -27,7 +27,6 @@ ARCHITECTURE arch_InstructionMemory OF InstructionMemory IS
 			BEGIN
 				beginning_address_of_operations<=InstructionMemory(0) & InstructionMemory(1);
 				if rising_edge(clk) THEN  
-					
 					dataout <= InstructionMemory(to_integer(unsigned(address))) & InstructionMemory(to_integer(unsigned(address))+1);
 				END IF;
 		END PROCESS;
