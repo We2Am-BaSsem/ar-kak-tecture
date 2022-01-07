@@ -1,0 +1,3 @@
+☐ WBData propagate correctly to register file
+☐ ALUOut start with 0001
+☐ Assert that Write Back Stage is shifted 2 cycles

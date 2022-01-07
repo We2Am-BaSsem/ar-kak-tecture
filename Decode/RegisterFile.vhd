@@ -1,41 +1,41 @@
-library IEEE;
-use IEEE.std_logic_1164.all;
-use IEEE.numeric_std.all;
+LIBRARY IEEE;
+USE IEEE.std_logic_1164.ALL;
+USE IEEE.numeric_std.ALL;
 
-entity RegisterFile is
-    port (
+ENTITY RegisterFile IS
+    PORT (
         --each input is a slice of the opcode coming from the fetch stage
-        readAddr1:  in std_logic_vector(2 downto 0);  -- instruction (7 downto 5)
-        readAddr2:  in std_logic_vector(2 downto 0);  -- instruction (4 downto 2)
-        writeAddr:  in std_logic_vector(2 downto 0);  -- insturction (10 downto 8)
-        writeData:  in std_logic_vector(15 downto 0);    --make sure is it 16 bits or 32 bits?
-        regWrite:   in std_logic;    --from control unit
-        readData1:  out std_logic_vector(15 downto 0); -- output to execute
-        readData2:  out std_logic_vector(15 downto 0)   -- output to execute
+        readAddr1 : IN STD_LOGIC_VECTOR(2 DOWNTO 0); -- instruction (7 downto 5)
+        readAddr2 : IN STD_LOGIC_VECTOR(2 DOWNTO 0); -- instruction (4 downto 2)
+        writeAddr : IN STD_LOGIC_VECTOR(2 DOWNTO 0); -- insturction (10 downto 8)
+        writeData : IN STD_LOGIC_VECTOR(15 DOWNTO 0); --make sure is it 16 bits or 32 bits?
+        regWrite : IN STD_LOGIC; --from control unit
+        readData1 : OUT STD_LOGIC_VECTOR(15 DOWNTO 0); -- output to execute
+        readData2 : OUT STD_LOGIC_VECTOR(15 DOWNTO 0) -- output to execute
     );
-end entity RegisterFile;
+END ENTITY RegisterFile;
 
-architecture Behavioral of RegisterFile is
-type reg_file_type is array(0 to 7) of std_logic_vector(15 downto 0);
-signal array_reg: reg_file_type := ( x"0000",
-                                     x"0000",
-                                     x"0000",
-                                     x"0000",
-                                     x"0000",
-                                     x"0000",
-                                     x"0000",
-                                     x"0000"
-);  --initiaizing registers
-begin
-    process(regWrite)   --writes data on signal regWrite
-    begin
-        if(regWrite = '1') then
-            array_reg(to_integer(unsigned(writeAddr))) <= writeData;
-        end if;
-    end process;
-
+ARCHITECTURE Behavioral OF RegisterFile IS
+    TYPE reg_file_type IS ARRAY(0 TO 7) OF STD_LOGIC_VECTOR(15 DOWNTO 0);
+    SIGNAL array_reg : reg_file_type := (x"0000",
+    x"0000",
+    x"0000",
+    x"0000",
+    x"0000",
+    x"0000",
+    x"0000",
+    x"0000"
+    ); --initiaizing registers
+BEGIN
+    -- PROCESS (regWrite, writeData) --writes data on signal regWrite
+    -- BEGIN
+    --     IF (regWrite = '1') THEN
+    --         array_reg(to_integer(unsigned(writeAddr))) <= writeData;
+    --     END IF;
+    -- END PROCESS;
+    array_reg(to_integer(unsigned(writeAddr))) <= writeData WHEN regWrite = '1';
     --reading is done regardless of anything
     readData1 <= array_reg(to_integer(unsigned(readAddr1)));
     readData2 <= array_reg(to_integer(unsigned(readAddr2)));
 
-end architecture Behavioral;
+END ARCHITECTURE Behavioral;

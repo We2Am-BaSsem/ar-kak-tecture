@@ -2,53 +2,48 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE IEEE.numeric_std.ALL;
 
-ENTITY FetchUnit is
+ENTITY FetchUnit IS
     --generic (n :integer :=16);
-    port(
-    clk ,rst: IN std_logic;  -- value is rst when rst=1
-    adder_output : in std_logic_vector(31 downto 0); -- connect with value_to_add_bit in PCNadder
-    
-    instruction_out : out std_logic_vector(31 downto 0); -- connect with value_to_add_bit in PCNadder
-    pc_reg_out       : out std_logic_vector(31 downto 0)  -- connect it to a in PCNadder
+    PORT (
+        clk, rst : IN STD_LOGIC; -- value is rst when rst=1
+        adder_output : IN STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+        -- connect with value_to_add_bit in PCNadder
+
+        instruction_out : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+        -- connect with value_to_add_bit in PCNadder
+        pc_reg_out : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0')
+        -- connect it to a in PCNadder
     );
-end entity FetchUnit;
+END ENTITY FetchUnit;
 
+ARCHITECTURE a_FetchUnit OF FetchUnit IS
 
+    SIGNAL pc_reg_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
-architecture a_FetchUnit of FetchUnit is 
+    SIGNAL beginning_address_sig : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    --SIGNAL adder_output: std_logic_vector(31 DOWNTO 0);
+    SIGNAL adder_outputCarryout : STD_LOGIC;
+    SIGNAL add_value : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL not_clk : STD_LOGIC;
 
-SIGNAL pc_reg_output : std_logic_vector(31 DOWNTO 0);
-
-signal beginning_address_sig: std_logic_vector(31 downto 0);
---SIGNAL adder_output: std_logic_vector(31 DOWNTO 0);
-SIGNAL adder_outputCarryout: std_logic;
-signal add_value:std_logic_vector(31 DOWNTO 0);
-signal not_clk: std_logic ;
-
-
-
-    begin
-        not_clk<=not(clk);
-        instructionmemory: entity work.InstructionMemory(arch_InstructionMemory) 
-        port map(
+BEGIN
+    not_clk <= NOT(clk);
+    instructionmemory : ENTITY work.InstructionMemory(arch_InstructionMemory)
+        PORT MAP(
             clk => clk,
-            rst     => rst,
+            rst => rst,
             address => pc_reg_output,
             dataout => instruction_out,
-            beginning_address_of_operations=>beginning_address_sig
-            );
-            pc_reg : entity work.PC_register(arch_PC_register)
-            port map(
-                clk => not_clk ,
-                Rst => rst,
-                beginning_address=>beginning_address_sig,
-                d=>adder_output,
-                q=>pc_reg_output
-                );
-        
-        pc_reg_out<=pc_reg_output;
+            beginning_address_of_operations => beginning_address_sig
+        );
+    pc_reg : ENTITY work.PC_register(arch_PC_register)
+        PORT MAP(
+            clk => not_clk,
+            Rst => rst,
+            beginning_address => beginning_address_sig,
+            d => adder_output,
+            q => pc_reg_output
+        );
 
-
-    end architecture;
-
-
+    pc_reg_out <= pc_reg_output;
+END ARCHITECTURE;

@@ -9,6 +9,12 @@ ENTITY pipeline_buffer IS
     );
     --  Logic Says:  We Write Data In Least Significant To Read It From Least Significant
     -------------------------------------------------------------------------------------------
+    -- dec_ex_buffer:
+    -- memtoreg(1bit), memwrite(1bit),memread(1bit),pop(1bit),push(1bit),fnjump(1bit), opCode(5bits) => 11 bits
+    -- Instruction[26:24](3bit) , Instruction[23:21](3bit), Instruction[20:18](3bit) => 9bits 
+    -- Data(D1)(16bit), Data(D2)(16bit), Imm(16) => 64bits
+    -- Used 68-bits
+    -------------------------------------------------------------------------------------------
     -- ex_mem_buffer:
     --  memtoreg(1bit), memwrite(1bit),memread(1bit),pop(1bit),push(1bit),fnjump(1bit) => 6 bits
     --  ALUout(16bit), DataToStore(D1)(16bit), PC(32bit) => 64bits

@@ -1,63 +1,72 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+ENTITY branching IS
 
-Library ieee;
-use ieee.std_logic_1164.all;
+    PORT (
 
+        ALUEx, StackEx, PCregOutput, RRdst : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        --pc reg output has pc_of_current_instruction+1 (or pc_of_current_instructionpc+2)
+        carryflag, negativeflag, zeroflag : IN STD_LOGIC;
+        instruction13to11 : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
 
-entity branching is 
+        FlushDecode, FlushEx, XofSP, POP, FnJMP : IN STD_LOGIC;
 
-port(
+        nextPC : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+    );
+END branching;
 
-ALUEx,StackEx,PCregOutput,RRdst : IN std_logic_vector(31 downto 0);
---pc reg output has pc_of_current_instruction+1 (or pc_of_current_instructionpc+2)
-carryflag,negativeflag,zeroflag : IN std_logic;
-instruction13to11               : IN std_logic_vector(2 downto 0);
+SIGNAL branchTaken : STD_LOGIC;
+SIGNAL first_mux, second_mux, third_mux : STD_LOGIC_VECTOR(31 DOWNTO 0);
+ARCHITECTURE branching_architecture OF branching IS
 
-FlushDecode,FlushEx,XofSP,POP,FnJMP : IN std_logic;
+BEGIN
+    IF (instruction13to11 = "000") AND (zeroflag = 1) THEN
+        branchTaken <= "1";
+    ELSE
+        IF (instruction13to11 = "001") AND (negativeflag = 1) THEN
+            branchTaken <= "1";
+        ELSE
+            IF (instruction13to11 = "010") AND (carryflag = 1) THEN
+                branchTaken <= "1";
+            ELSE
+                IF (instruction13to11 = "011") THEN
+                    branchTaken <= "1";
+                ELSE
+                    branchTaken <= "0";
 
-nextPC                          : OUT  std_logic_vector(31 downto 0)
-);
-end branching;
+                    IF (branchTaken = "1") THEN
+                        first_mux <= RRdst;
+                    ELSE
+                        first_mux <= PCregOutput;
+                        --here should be the code of secondmux
+                        IF (Flushdecode = "") and(FlushEx="") THEN
+                            second_mux <= ALUEx
+                                ELSE
+                                IF (Flushdecode = "") and(FlushEx="") THEN
+                                    second_mux <= StackEx
+                                    ELSE
+                                    second_mux <= first_mux;
 
-signal branchTaken :  std_logic;
-signal first_mux,second_mux,third_mux :      std_logic_vector(31 downto 0);
-architecture branching_architecture of branching is 
+                                    IF (POP AND FnJMP) THEN
+                                        third_mux <= XofSP;
+                                    ELSE
+                                        third_mux <= second_mux;
+                                END ARCHITECTURE
 
-begin   
-    if(instruction13to11="000") and (zeroflag=1) then
-        branchTaken<="1";
-    else if (instruction13to11="001") and (negativeflag=1)then
-        branchTaken<="1";
-    else if (instruction13to11="010") and (carryflag=1)then
-        branchTaken<="1";
-    else if (instruction13to11="011") then
-        branchTaken<="1";
-    else
-        branchTaken<="0";
+                                    IF (POP AND FnJMP) THEN
+                                        third_mux <= XofSP;
+                                    ELSE
+                                        third_mux <= second_mux;
+                                END ARCHITECTURE
 
-    if(branchTaken="1")then
-        first_mux<=RRdst;
-    else 
-    first_mux<=PCregOutput;
+                            IF (POP AND FnJMP) THEN
+                                third_mux <= XofSP;
+                                ELSE
+                                third_mux <= second_mux;
+                                END ARCHITECTURE
 
-
-    --here should be the code of secondmux
-    if(Flushdecode="") and(FlushEx="") then
-        second_mux<=ALUEx
-    else if (Flushdecode="") and(FlushEx="")then
-        second_mux<=StackEx
-    else 
-    second_mux<=first_mux;
-
-
-
-    if(POP and FnJMP) then
-        third_mux<=XofSP;
-    else
-        third_mux<=second_mux;
-
-
-end architecture
-
-
-
-
+                            IF (POP AND FnJMP) THEN
+                                third_mux <= XofSP;
+                                ELSE
+                                third_mux <= second_mux;
+                                END ARCHITECTURE

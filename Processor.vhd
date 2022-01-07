@@ -7,29 +7,24 @@ ENTITY Processor IS
     GENERIC (n : INTEGER := 16);
 
     PORT (
-        clk : IN STD_LOGIC;
-        rst : IN STD_LOGIC
-
+        clk : IN STD_LOGIC := '0';
+        rst : IN STD_LOGIC := '0';
+        InPort : IN STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
+        OutPort : OUT STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0')
     );
 END ENTITY Processor;
 
 ARCHITECTURE arKAKtectureProcessor OF Processor IS
+    SIGNAL In_Signal, Out_Signal : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
 
-    SIGNAL fetched_instruction : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL pc_reg_out_sig : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL adder_output_sig : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL cout_sig : STD_LOGIC;
     SIGNAL temp_zero : STD_LOGIC := '0';
 
-    
-
-    SIGNAL fetched_instruction_buffer_input_fetchstage : STD_LOGIC_VECTOR(31 DOWNTO 0);
-    SIGNAL fetched_instruction_buffer_output_fetchstage : STD_LOGIC_VECTOR(31 DOWNTO 0);
-    
-    
-    SIGNAL fetched_instruction_buffer_output_decodestage : STD_LOGIC_VECTOR(31 DOWNTO 0);
-
-
+    SIGNAL fetched_instruction_buffer_input_fetchstage : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL fetched_instruction_buffer_output_fetchstage : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL fetched_instruction_buffer_output_decodestage : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     ------------------------------------------------------------------------
     SIGNAL memRead_s,
     memToReg_s,
@@ -47,6 +42,7 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
     readData2_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
     --outputs od register file  --todo: integrate with execution
     ---------------------------------------------------------------------------
+    SIGNAL DecExBufferInput, DecExBufferOutput : STD_LOGIC_VECTOR(127 DOWNTO 0) := (OTHERS => '0');
     SIGNAL ALUOut_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
     ---------------------------------------------------------------------------
     SIGNAL ExMemBufferInput, ExMemBufferOutput : STD_LOGIC_VECTOR(127 DOWNTO 0) := (OTHERS => '0');
@@ -56,10 +52,30 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
     SIGNAL MemWBBufferInput, MemWBBufferOutput : STD_LOGIC_VECTOR(127 DOWNTO 0) := (OTHERS => '0');
     SIGNAL WriteBackData_s : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
 BEGIN
+    -----------------------------------I/O Ports--------------------------------
+    INPORTREGISTER : ENTITY work.pipeline_buffer(pipeline_buffer)
+        GENERIC MAP(n => 16)
+        PORT MAP(
+            D => InPort,
+            Q => In_Signal,
+            clk => clk,
+            rst => rst,
+            en => '1'
+        );
+    OUTPORTREGISTER : ENTITY work.pipeline_buffer(pipeline_buffer)
+        GENERIC MAP(n => 16)
+        PORT MAP(
+            D => Out_Signal,
+            Q => OutPort,
+            clk => clk,
+            rst => rst,
+            en => '1'
+        );
+
     -----------------------------------Fetch unit--------------------------------
     fetch_unit : ENTITY work.FetchUnit(a_FetchUnit)
         PORT MAP(
-            clk => clk, 
+            clk => clk,
             rst => rst,
             adder_output => adder_output_sig,
             instruction_out => fetched_instruction_buffer_input_fetchstage, -- this is the fetched instruction
@@ -73,17 +89,12 @@ BEGIN
             s => adder_output_sig,
             cout => cout_sig
         );
-
-
-        fetched_instruction_buffer_fetchstage : ENTITY work.pipeline_buffer(pipeline_buffer)
-        generic map (
-            n => 32
-        )
-
+    fetched_instruction_buffer_fetchstage : ENTITY work.pipeline_buffer(pipeline_buffer)
+        GENERIC MAP(n => 32)
         PORT MAP(
             D => fetched_instruction_buffer_input_fetchstage,
             Q => fetched_instruction_buffer_output_fetchstage,
-            clk => clk, 
+            clk => clk,
             rst => rst,
             en => '1'
         );
@@ -91,60 +102,79 @@ BEGIN
     -----------------------------------Decode--------------------------------
     control_unit : ENTITY work.ControlUnit(dataflow)
         PORT MAP(
-            instruction => fetched_instruction_buffer_output_fetchstage(15 DOWNTO 11),
+            instruction => fetched_instruction_buffer_output_fetchstage(31 DOWNTO 27),
             aluEx => '0', --todo
             memEx => memEx_s,
-            memRead => memRead_s,
-            memToReg => memToReg_s,
-            memWrite => memWrite_s,
+            memRead => DecExBufferInput(65),
+            memToReg => DecExBufferInput(67),
+            memWrite => DecExBufferInput(66),
             regWrite => regWrite_s,
-            pop => pop_s,
-            fnJmp => fnJmp_s,
+            pop => DecExBufferInput(64),
+            fnJmp => DecExBufferInput(62),
             flushDecode => flushDecode_s,
-            flushExecute => flushExecute_s
+            flushExecute => flushExecute_s,
+            outSignal => DecExBufferInput(68),
+            inSignal => DecExBufferInput(69)
         );
 
     register_file : ENTITY work.RegisterFile(Behavioral)
         PORT MAP(
             --each input is a slice of the opcode coming from the fetch stage
-            readAddr1 => fetched_instruction_buffer_output_fetchstage(7 DOWNTO 5),
-            readAddr2 => fetched_instruction_buffer_output_fetchstage(4 DOWNTO 2),
-            writeAddr => fetched_instruction_buffer_output_fetchstage(10 DOWNTO 8),
+            readAddr1 => fetched_instruction_buffer_output_fetchstage(23 DOWNTO 21),
+            readAddr2 => fetched_instruction_buffer_output_fetchstage(20 DOWNTO 18),
+            writeAddr => fetched_instruction_buffer_output_fetchstage(26 DOWNTO 24),
             writeData => WriteBackData_s,
             regWrite => regWrite_s,
-            readData1 => readData1_s,
-            readData2 => readData2_s
+            readData1 => DecExBufferInput(47 DOWNTO 32),
+            readData2 => DecExBufferInput(31 DOWNTO 16)
         );
 
     --fetched instruction buffer for this stage
     fetched_instruction_buffer_decodestage : ENTITY work.pipeline_buffer(pipeline_buffer)
-    generic map (
-        n => 32
-    )
+        GENERIC MAP(
+            n => 32
+        )
 
-    PORT MAP(
-        D => fetched_instruction_buffer_output_fetchstage,
-        Q => fetched_instruction_buffer_output_decodestage,
-        clk => clk, 
-        rst => rst,
-        en => '1'
-    );
+        PORT MAP(
+            D => fetched_instruction_buffer_output_fetchstage,
+            Q => fetched_instruction_buffer_output_decodestage,
+            clk => clk,
+            rst => rst,
+            en => '1'
+        );
 
     -----------------------------------Execute--------------------------------
+    ----------------------------------------------------------------
+    -- todo add push signal from Control Unit
+    DecExBufferInput(63) <= '0';
+    ----------------------------------------------------------------
+    DecExBufferInput(61 DOWNTO 48) <= fetched_instruction_buffer_output_fetchstage(31 DOWNTO 18);
+    DecExBufferInput(15 DOWNTO 0) <= fetched_instruction_buffer_output_fetchstage(15 DOWNTO 0);
+
+    DecExBuffer : ENTITY work.pipeline_buffer(pipeline_buffer)
+        PORT MAP(
+            D => DecExBufferInput,
+            Q => DecExBufferOutput,
+            clk => clk,
+            rst => rst,
+            en => '1'
+        );
     ALU : ENTITY work.ALU(ALU)
         PORT MAP(
             oldN => '0',
             oldZ => '0',
-            opCode => fetched_instruction_buffer_output_decodestage(15 DOWNTO 11),
-            d1 => readData1_s,
-            d2 => readData2_s,
-            imm => (OTHERS => '0'),
-            ALUOut => ALUOut_s
+            opCode => DecExBufferOutput(61 DOWNTO 57),
+            d1 => DecExBufferOutput(47 DOWNTO 32),
+            d2 => DecExBufferOutput(31 DOWNTO 16),
+            imm => DecExBufferOutput(15 DOWNTO 0),
+            ALUOut => ExMemBufferInput(63 DOWNTO 48)
         );
 
     -----------------------------------Memory--------------------------------
-    ExMemBufferInput(69 DOWNTO 0) <= memToReg_s & memWrite_s & memRead_s
-    & pop_s & push_s & fnJmp_s & ALUOut_s & readData1_s & pc_reg_out_sig;
+    ExMemBufferInput(71 DOWNTO 64) <= DecExBufferOutput(69) & DecExBufferOutput(68) & DecExBufferOutput(67) & DecExBufferOutput(66) & DecExBufferOutput(65)
+    & DecExBufferOutput(64) & DecExBufferOutput(63) & DecExBufferOutput(62);
+
+    ExMemBufferInput(47 DOWNTO 0) <= DecExBufferOutput(47 DOWNTO 32) & fetched_instruction_buffer_output_decodestage;
     ExMemBuffer : ENTITY work.pipeline_buffer(pipeline_buffer)
         PORT MAP(
             D => ExMemBufferInput,
@@ -166,20 +196,21 @@ BEGIN
         );
 
     -----------------------------------Write Back--------------------------------
-    MemWBBufferInput(32 DOWNTO 16) <= ExMemBufferOutput(69) & ExMemBufferOutput(63 DOWNTO 48);
+    MemWBBufferInput(34 DOWNTO 16) <= ExMemBufferOutput(71) & ExMemBufferOutput(70) & ExMemBufferOutput(69) & ExMemBufferOutput(63 DOWNTO 48);
     MemWBBuffer : ENTITY work.pipeline_buffer(pipeline_buffer)
         PORT MAP(
             D => MemWBBufferInput,
             Q => MemWBBufferOutput,
             clk => clk, rst => '0', en => '1'
         );
-        
+
     WriteBack : ENTITY work.WriteBack_Stage(WriteBack_Stage)
         PORT MAP(
-            MemtoReg => MemWBBufferOutput(32), clk => clk,
+            MemtoReg => MemWBBufferOutput(32), clk => clk, InSignal => MemWBBufferOutput(34),
             PopD => MemWBBufferOutput(15 DOWNTO 0), ALUout => MemWBBufferOutput(31 DOWNTO 16),
+            Inport => In_Signal,
             WBD => WriteBackData_s
         );
+
+    Out_Signal <= WriteBackData_s WHEN MemWBBufferOutput(33) = '1';
 END ARCHITECTURE arKAKtectureProcessor;
-
-
