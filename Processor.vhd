@@ -201,7 +201,7 @@ BEGIN
 
     -----------------------------------Write Back--------------------------------
     MemWBBufferInput(34 DOWNTO 16) <= ExMemBufferOutput(71) & ExMemBufferOutput(70) & ExMemBufferOutput(69) & ExMemBufferOutput(63 DOWNTO 48);
-    MemWBBufferOutput(38 DOWNTO 35) <= ExMemBufferOutput(75 DOWNTO 72);
+    MemWBBufferInput(38 DOWNTO 35) <= ExMemBufferOutput(75 DOWNTO 72);
     MemWBBuffer : ENTITY work.pipeline_buffer(pipeline_buffer)
         PORT MAP(
             D => MemWBBufferInput,
