@@ -37,6 +37,7 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
     flushExecute_s : STD_LOGIC; --outputs of control_unit 
     --todo: integrate with execution
     SIGNAL memEx_s : STD_LOGIC := '0';
+    SIGNAL writeAddress_s : STD_LOGIC_VECTOR(2 DOWNTO 0);
     ---------------------------------------------------------------------------
     SIGNAL readData1_s,
     readData2_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
@@ -103,9 +104,9 @@ BEGIN
             --each input is a slice of the opcode coming from the fetch stage
             readAddr1 => fetched_instruction_buffer_output_fetchstage(23 DOWNTO 21),
             readAddr2 => fetched_instruction_buffer_output_fetchstage(20 DOWNTO 18),
-            writeAddr => MemWBBufferOutput(38 downto 36),
+            writeAddr => writeAddress_s,
             writeData => WriteBackData_s,
-            regWrite => MemWBBufferOutput(35),
+            regWrite => regWrite_s,
             readData1 => DecExBufferInput(47 DOWNTO 32),
             readData2 => DecExBufferInput(31 DOWNTO 16)
         );
@@ -216,6 +217,7 @@ BEGIN
             Inport => In_Signal,
             WBD => WriteBackData_s
         );
-
+    regWrite_s <= MemWBBufferOutput(35);
+    writeAddress_s <= MemWBBufferOutput(38 DOWNTO 36);
     -- Out_Signal <= WriteBackData_s WHEN MemWBBufferOutput(33) = '1';
 END ARCHITECTURE arKAKtectureProcessor;

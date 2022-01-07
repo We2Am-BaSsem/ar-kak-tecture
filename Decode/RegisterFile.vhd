@@ -27,7 +27,7 @@ ARCHITECTURE Behavioral OF RegisterFile IS
     x"0000"
     ); --initiaizing registers
 BEGIN
-    PROCESS (regWrite, writeData) --writes data on signal regWrite
+    PROCESS (regWrite, writeData, writeAddr) --writes data on signal regWrite
     BEGIN
         IF (regWrite = '1') THEN
             array_reg(to_integer(unsigned(writeAddr))) <= writeData;
@@ -35,7 +35,7 @@ BEGIN
     END PROCESS;
 
     -- array_reg(to_integer(unsigned(writeAddr))) <= writeData WHEN regWrite = '1';
-    
+
     --reading is done regardless of anything
     readData1 <= array_reg(to_integer(unsigned(readAddr1)));
     readData2 <= array_reg(to_integer(unsigned(readAddr2)));
