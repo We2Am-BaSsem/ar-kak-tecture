@@ -38,6 +38,6 @@ INC R2
 INC R1
 NOP            #No change
 NOP            #No change
-OUT R1
 OUT R2
+OUT R1
 HLT

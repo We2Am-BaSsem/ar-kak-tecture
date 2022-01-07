@@ -61,7 +61,7 @@ memException = 129
 interupt1 = 257
 interupt2 = 513
 
-file = open(os.getcwd() + "/OneOperand.asm", "r")
+file = open(os.getcwd() + "/Compiler/OneOperand.asm", "r")
 memory = ["0000000000000000"] * 2 ** 12
 code = []
 

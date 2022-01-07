@@ -97,8 +97,8 @@ BEGIN
             fnJmp => DecExBufferInput(62),
             flushDecode => flushDecode_s,
             flushExecute => flushExecute_s,
-            --outSignal => DecExBufferInput(68), --todo remove from buffer
-            inSignal => DecExBufferInput(68)
+            outSignal => DecExBufferInput(68), --todo remove from buffer
+            inSignal => DecExBufferInput(69)
         );
 
     InPortSignal_s <= '1' WHEN fetched_instruction_buffer_output_fetchstage(31 DOWNTO 27) = "00110" ELSE
