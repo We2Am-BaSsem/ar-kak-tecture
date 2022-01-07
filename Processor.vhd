@@ -52,25 +52,7 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
     SIGNAL MemWBBufferInput, MemWBBufferOutput : STD_LOGIC_VECTOR(127 DOWNTO 0) := (OTHERS => '0');
     SIGNAL WriteBackData_s : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
 BEGIN
-    -----------------------------------I/O Ports--------------------------------
-    INPORTREGISTER : ENTITY work.pipeline_buffer(pipeline_buffer)
-        GENERIC MAP(n => 16)
-        PORT MAP(
-            D => InPort,
-            Q => In_Signal,
-            clk => clk,
-            rst => rst,
-            en => '1'
-        );
-    OUTPORTREGISTER : ENTITY work.pipeline_buffer(pipeline_buffer)
-        GENERIC MAP(n => 16)
-        PORT MAP(
-            D => Out_Signal,
-            Q => OutPort,
-            clk => clk,
-            rst => rst,
-            en => '1'
-        );
+    
 
     -----------------------------------Fetch unit--------------------------------
     fetch_unit : ENTITY work.FetchUnit(a_FetchUnit)
@@ -144,6 +126,28 @@ BEGIN
         );
 
     -----------------------------------Execute--------------------------------
+
+    -----------------------------------I/O Ports--------------------------------
+    INPORTREGISTER : ENTITY work.pipeline_buffer(pipeline_buffer)
+        GENERIC MAP(n => 16)
+        PORT MAP(
+            D => InPort,
+            Q => In_Signal,
+            clk => clk,
+            rst => rst,
+            en => '1'
+        );
+    OUTPORTREGISTER : ENTITY work.pipeline_buffer(pipeline_buffer)
+        GENERIC MAP(n => 16)
+        PORT MAP(
+            D => Out_Signal,
+            Q => OutPort,
+            clk => clk,
+            rst => rst,
+            en => '1'
+        );
+
+
     ----------------------------------------------------------------
     -- todo add push signal from Control Unit
     DecExBufferInput(63) <= '0';
