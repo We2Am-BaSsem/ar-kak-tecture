@@ -19,7 +19,8 @@ BEGIN
         ELSE
         '0';
 
-    EnableOutPort <= '1' WHEN opCode = b"00101" ELSE '0';
+    EnableOutPort <= '1' WHEN opCode = b"00101" ELSE
+        '0';
 
     ALUSelectors(1 DOWNTO 0) <= b"11" WHEN opCode(2 DOWNTO 0) = b"010"
 ELSE
@@ -135,9 +136,7 @@ ARCHITECTURE ALU OF ALU IS
 
     SIGNAL ALUSelectors : STD_LOGIC_VECTOR(6 DOWNTO 0) := (OTHERS => '0');
     SIGNAL ALUOutSig : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL IgnoreSignal_s: STD_LOGIC := '0';
-    
-
+    SIGNAL IgnoreSignal_s : STD_LOGIC := '0';
     COMPONENT ALUControl IS
         PORT (
             IgnoreSignal : OUT STD_LOGIC := '0';
@@ -169,7 +168,9 @@ BEGIN
     Compute : ALUCompute PORT MAP(ALUSelectors, d1, d2, imm, ALUOutSig, cout);
     ToFlags : ALUToFlags PORT MAP(oldN, oldZ, ALUSelectors(1 DOWNTO 0), ALUOutSig, newN, newZ);
 
-    ALUOut <= ALUOutSig WHEN IgnoreSignal_s = '0';
+    ALUOut <= ALUOutSig WHEN IgnoreSignal_s = '0'
+        ELSE
+        (OTHERS => '0');
 
     ALUExceptionSignal <= '1' WHEN ALUOutSig >= x"FF00" AND opCode(4 DOWNTO 1) = b"1000" ELSE
         '0';
