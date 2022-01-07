@@ -19,7 +19,7 @@ BEGIN
         ELSE
         '0';
 
-    EnableOutPort <= '1' WHEN opCode = b"00101" ELSE 0
+    EnableOutPort <= '1' WHEN opCode = b"00101" ELSE '0';
 
     ALUSelectors(1 DOWNTO 0) <= b"11" WHEN opCode(2 DOWNTO 0) = b"010"
 ELSE
@@ -126,8 +126,8 @@ ENTITY ALU IS
         ALUOut : OUT STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
         newN, newZ : OUT STD_LOGIC := '0';
         cout : OUT STD_LOGIC := '0';
-        ALUExceptionSignal : OUT STD_LOGIC := '0'
-        EnableOutPort : OUT STD_LOGIC := '0';
+        ALUExceptionSignal : OUT STD_LOGIC := '0';
+        EnableOutPort : OUT STD_LOGIC := '0'
     );
 END ENTITY ALU;
 
