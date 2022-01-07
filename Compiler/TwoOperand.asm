@@ -22,7 +22,7 @@ IN R1        #add 5 in R1
 IN R2        #add 19 in R2
 IN R3        #FFFF
 IN R4        #F320
-#NOP          #data hazard
+NOP          #data hazard
 MOV R3,R5    #R5 = FFFF , flags no change
 ADD R4,R1,R4    #R4= F325 , C-->0, N-->1, Z-->0
 NOP

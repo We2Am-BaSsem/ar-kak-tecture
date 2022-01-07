@@ -49,10 +49,11 @@ add wave -position insertpoint sim:/processor/WriteBack/*
 
 
 force -freeze sim:/processor/clk 0 0, 1 {50 ps} -r 100
+force -freeze sim:/processor/InPort 16#FFAA 0
 
 
 
-mem load -i {/home/mohamed/Desktop/repos/ar-kak-tecture/Memory files/OneOperandMemeory.mem} /processor/fetch_unit/instructionmemory/InstructionMemory
+mem load -i {/home/mohamed/Desktop/repos/ar-kak-tecture/TwoOperandMemeory.mem} /processor/fetch_unit/instructionmemory/InstructionMemory
 
 
 force -freeze sim:/processor/rst 1 0
@@ -60,19 +61,4 @@ run 25 ps
 force -freeze sim:/processor/rst 0 0
 run 25 ps
 
-force -freeze sim:/processor/InPort 16#0005 0
-run
-
-force -freeze sim:/processor/InPort 16#0019 0
-run
-
-force -freeze sim:/processor/InPort 16#FFFF 0
-run
-
-force -freeze sim:/processor/InPort 16#F320 0
-run
-
-
-
 run 5000 ps
-
