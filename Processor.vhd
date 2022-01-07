@@ -44,7 +44,9 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
     ---------------------------------------------------------------------------
     SIGNAL DecExBufferInput, DecExBufferOutput : STD_LOGIC_VECTOR(127 DOWNTO 0) := (OTHERS => '0');
     SIGNAL ALUOut_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
-    SIGNAL EnableOutPort: STD_LOGIC := '0';
+    SIGNAL EnableOutPort_s: STD_LOGIC := '0';
+    SIGNAL InPortSignal_s: STD_LOGIC := '0';
+    SIGNAL opCode_s : STD_LOGIC_VECTOR(4 DOWNTO 0);
     ---------------------------------------------------------------------------
     SIGNAL ExMemBufferInput, ExMemBufferOutput : STD_LOGIC_VECTOR(127 DOWNTO 0) := (OTHERS => '0');
     SIGNAL stackOut_s : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
@@ -97,8 +99,12 @@ BEGIN
             flushDecode => flushDecode_s,
             flushExecute => flushExecute_s,
             --outSignal => DecExBufferInput(68), --todo remove from buffer
-            inSignal => DecExBufferInput(69)
+            inSignal => DecExBufferInput(68)
         );
+
+    InPortSignal_s <= '1' WHEN fetched_instruction_buffer_output_fetchstage(31 DOWNTO 27) = "00110" ELSE '0';
+    opCode_s <= "01010" WHEN fetched_instruction_buffer_output_fetchstage(31 DOWNTO 27) = "00110"
+                   ELSE fetched_instruction_buffer_output_fetchstage(31 DOWNTO 27);
 
     register_file : ENTITY work.RegisterFile(Behavioral)
         PORT MAP(
@@ -108,6 +114,8 @@ BEGIN
             writeAddr => fetched_instruction_buffer_output_fetchstage(26 DOWNTO 24),
             writeData => WriteBackData_s,
             regWrite => regWrite_s,
+            InPortData => In_Signal,
+            InPortSignal => InPortSignal_s,
             readData1 => DecExBufferInput(47 DOWNTO 32),
             readData2 => DecExBufferInput(31 DOWNTO 16)
         );
@@ -145,7 +153,7 @@ BEGIN
             Q => OutPort,
             clk => clk,
             rst => rst,
-            en => EnableOutPort
+            en => EnableOutPort_s
         );
 
 
@@ -153,7 +161,8 @@ BEGIN
     -- todo add push signal from Control Unit
     DecExBufferInput(63) <= '0';
     ----------------------------------------------------------------
-    DecExBufferInput(61 DOWNTO 48) <= fetched_instruction_buffer_output_fetchstage(31 DOWNTO 18);
+    DecExBufferInput(56 DOWNTO 48) <= fetched_instruction_buffer_output_fetchstage(26 DOWNTO 18);
+    DecExBufferInput(61 DOWNTO 57) <= opCode_s;
     DecExBufferInput(15 DOWNTO 0) <= fetched_instruction_buffer_output_fetchstage(15 DOWNTO 0);
 
     DecExBuffer : ENTITY work.pipeline_buffer(pipeline_buffer)
@@ -173,7 +182,7 @@ BEGIN
             d2 => DecExBufferOutput(31 DOWNTO 16),
             imm => DecExBufferOutput(15 DOWNTO 0),
             ALUOut => ExMemBufferInput(63 DOWNTO 48),
-            EnableOutPort => EnableOutPort
+            EnableOutPort => EnableOutPort_s
         );
 
     -----------------------------------Memory--------------------------------

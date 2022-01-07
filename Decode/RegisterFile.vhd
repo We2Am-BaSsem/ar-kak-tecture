@@ -11,7 +11,9 @@ ENTITY RegisterFile IS
         writeData : IN STD_LOGIC_VECTOR(15 DOWNTO 0); --make sure is it 16 bits or 32 bits?
         regWrite : IN STD_LOGIC; --from control unit
         readData1 : OUT STD_LOGIC_VECTOR(15 DOWNTO 0); -- output to execute
-        readData2 : OUT STD_LOGIC_VECTOR(15 DOWNTO 0) -- output to execute
+        readData2 : OUT STD_LOGIC_VECTOR(15 DOWNTO 0); -- output to execute
+        InPortData: IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+        InPortSignal: IN STD_LOGIC
     );
 END ENTITY RegisterFile;
 
@@ -35,7 +37,8 @@ BEGIN
     -- END PROCESS;
     array_reg(to_integer(unsigned(writeAddr))) <= writeData WHEN regWrite = '1';
     --reading is done regardless of anything
-    readData1 <= array_reg(to_integer(unsigned(readAddr1)));
+    readData1 <= array_reg(to_integer(unsigned(readAddr1))) WHEN InPortSignal = '0'
+                ELSE InPortData;
     readData2 <= array_reg(to_integer(unsigned(readAddr2)));
 
 END ARCHITECTURE Behavioral;
