@@ -44,6 +44,7 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
     ---------------------------------------------------------------------------
     SIGNAL DecExBufferInput, DecExBufferOutput : STD_LOGIC_VECTOR(127 DOWNTO 0) := (OTHERS => '0');
     SIGNAL ALUOut_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    SIGNAL EnableOutPort: STD_LOGIC := '0';
     ---------------------------------------------------------------------------
     SIGNAL ExMemBufferInput, ExMemBufferOutput : STD_LOGIC_VECTOR(127 DOWNTO 0) := (OTHERS => '0');
     SIGNAL stackOut_s : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
@@ -95,7 +96,7 @@ BEGIN
             fnJmp => DecExBufferInput(62),
             flushDecode => flushDecode_s,
             flushExecute => flushExecute_s,
-            outSignal => DecExBufferInput(68),
+            --outSignal => DecExBufferInput(68), --todo remove from buffer
             inSignal => DecExBufferInput(69)
         );
 
@@ -140,11 +141,11 @@ BEGIN
     OUTPORTREGISTER : ENTITY work.pipeline_buffer(pipeline_buffer)
         GENERIC MAP(n => 16)
         PORT MAP(
-            D => Out_Signal,
+            D => DecExBufferOutput(47 DOWNTO 32), --todo : use d1 from data forwarding unit
             Q => OutPort,
             clk => clk,
             rst => rst,
-            en => '1'
+            en => EnableOutPort
         );
 
 
@@ -171,7 +172,8 @@ BEGIN
             d1 => DecExBufferOutput(47 DOWNTO 32),
             d2 => DecExBufferOutput(31 DOWNTO 16),
             imm => DecExBufferOutput(15 DOWNTO 0),
-            ALUOut => ExMemBufferInput(63 DOWNTO 48)
+            ALUOut => ExMemBufferInput(63 DOWNTO 48),
+            EnableOutPort => EnableOutPort
         );
 
     -----------------------------------Memory--------------------------------

@@ -7,16 +7,19 @@ ENTITY ALUControl IS
     PORT (
         IgnoreSignal : OUT STD_LOGIC := '0';
         opCode : IN STD_LOGIC_VECTOR(4 DOWNTO 0) := (OTHERS => '0');
-        ALUSelectors : OUT STD_LOGIC_VECTOR(6 DOWNTO 0) := (OTHERS => '0')
+        ALUSelectors : OUT STD_LOGIC_VECTOR(6 DOWNTO 0) := (OTHERS => '0');
+        EnableOutPort : OUT STD_LOGIC := '0'
     );
 END ENTITY ALUControl;
 
 ARCHITECTURE ALUControl OF ALUControl IS
 BEGIN
 
-    IgnoreSignal <= '1' WHEN opCode = b"00000" OR opCode = b"00010" OR opCode = b"00101" OR opCode = b"00110"
+    IgnoreSignal <= '1' WHEN opCode = b"00000" OR opCode = b"00010" OR opCode = b"00101" OR opCode = b"00110" --todo: remove last check 00110
         ELSE
         '0';
+
+    EnableOutPort <= '1' WHEN opCode = b"00101" ELSE 0
 
     ALUSelectors(1 DOWNTO 0) <= b"11" WHEN opCode(2 DOWNTO 0) = b"010"
 ELSE
@@ -124,6 +127,7 @@ ENTITY ALU IS
         newN, newZ : OUT STD_LOGIC := '0';
         cout : OUT STD_LOGIC := '0';
         ALUExceptionSignal : OUT STD_LOGIC := '0'
+        EnableOutPort : OUT STD_LOGIC := '0';
     );
 END ENTITY ALU;
 
@@ -131,13 +135,15 @@ ARCHITECTURE ALU OF ALU IS
 
     SIGNAL ALUSelectors : STD_LOGIC_VECTOR(6 DOWNTO 0) := (OTHERS => '0');
     SIGNAL ALUOutSig : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL IgnoreSignal_s : STD_LOGIC := '0';
+    SIGNAL IgnoreSignal_s: STD_LOGIC := '0';
+    
 
     COMPONENT ALUControl IS
         PORT (
             IgnoreSignal : OUT STD_LOGIC := '0';
             opCode : IN STD_LOGIC_VECTOR(4 DOWNTO 0) := (OTHERS => '0');
-            ALUSelectors : OUT STD_LOGIC_VECTOR(6 DOWNTO 0) := (OTHERS => '0')
+            ALUSelectors : OUT STD_LOGIC_VECTOR(6 DOWNTO 0) := (OTHERS => '0');
+            EnableOutPort : OUT STD_LOGIC := '0'
         );
     END COMPONENT;
 
@@ -159,7 +165,7 @@ ARCHITECTURE ALU OF ALU IS
         );
     END COMPONENT;
 BEGIN
-    Control : ALUControl PORT MAP(IgnoreSignal_s, opCode, ALUSelectors);
+    Control : ALUControl PORT MAP(IgnoreSignal_s, opCode, ALUSelectors, EnableOutPort);
     Compute : ALUCompute PORT MAP(ALUSelectors, d1, d2, imm, ALUOutSig, cout);
     ToFlags : ALUToFlags PORT MAP(oldN, oldZ, ALUSelectors(1 DOWNTO 0), ALUOutSig, newN, newZ);
 

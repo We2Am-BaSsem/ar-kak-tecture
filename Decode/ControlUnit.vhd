@@ -14,7 +14,7 @@ ENTITY ControlUnit IS
         pop,
         fnJmp,
         flushDecode, flushExecute : OUT STD_LOGIC := '0'; --?
-        outSignal : OUT STD_LOGIC := '0';
+        --outSignal : OUT STD_LOGIC := '0';
         inSignal : OUT STD_LOGIC := '0'
     );
 END ENTITY ControlUnit;
@@ -71,7 +71,7 @@ BEGIN
     END PROCESS;
 
     inSignal <= '1' WHEN instruction = "00110";
-    outSignal <= '1' WHEN instruction = "00101";
+    --outSignal <= '1' WHEN instruction = "00101";
     memRead <= out_vector(5);
     memToReg <= out_vector(4);
     memWrite <= out_vector(3);
