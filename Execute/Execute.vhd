@@ -105,10 +105,13 @@ END ENTITY ALUToFlags;
 ARCHITECTURE ALUToFlags OF ALUToFlags IS
 BEGIN
     newN <= ALUOut(15);
-    newZ <= '1' WHEN ALUOut = x"0000" 
-        ELSE '0';
-    en <= '0' WHEN ALUSelectors = b"11" ELSE '1';
-    enC <= '1' WHEN ALUSelectors = b"00" ELSE '0';
+    newZ <= '1' WHEN ALUOut = x"0000"
+        ELSE
+        '0';
+    en <= '0' WHEN ALUSelectors = b"11" ELSE
+        '1';
+    enC <= '1' WHEN ALUSelectors = b"00" ELSE
+        '0';
 END ALUToFlags;
 
 LIBRARY IEEE;
@@ -121,7 +124,7 @@ ENTITY ALU IS
         opCode : IN STD_LOGIC_VECTOR(4 DOWNTO 0) := (OTHERS => '0');
         d1, d2, imm : IN STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
         ALUOut : OUT STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
-        newN, newZ, , en, enc : OUT STD_LOGIC := '0';
+        newN, newZ, en, enc : OUT STD_LOGIC := '0';
         cout : OUT STD_LOGIC := '0';
         ALUExceptionSignal : OUT STD_LOGIC := '0';
         EnableOutPort : OUT STD_LOGIC := '0'
@@ -153,8 +156,9 @@ ARCHITECTURE ALU OF ALU IS
 
     COMPONENT ALUToFlags IS
         PORT (
+            ALUSelectors : IN STD_LOGIC_VECTOR(1 DOWNTO 0) := (OTHERS => '0');
             ALUOut : IN STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
-            newN, newZ : OUT STD_LOGIC := '0'
+            newN, newZ, en, enc : OUT STD_LOGIC := '0'
         );
     END COMPONENT;
 BEGIN

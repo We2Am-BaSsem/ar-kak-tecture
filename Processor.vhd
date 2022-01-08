@@ -227,8 +227,8 @@ BEGIN
         );
     ALU : ENTITY work.ALU(ALU)
         PORT MAP(
-            oldN => '0',
-            oldZ => '0',
+            newN => '0',
+            newZ => '0',
             opCode => DecExBufferOutput(61 DOWNTO 57),
             d1 => d1_s,
             d2 => d2_s,

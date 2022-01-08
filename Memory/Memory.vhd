@@ -25,14 +25,8 @@ BEGIN
         VARIABLE tempAddress : STD_LOGIC_VECTOR(31 DOWNTO 0) := STD_LOGIC_VECTOR'(x"00000000");
     BEGIN
         IF True THEN
-            -- IF (address(31 DOWNTO 16) /= STD_LOGIC_VECTOR'(x"0000")) THEN
-            --     InvalidMemoryExceptionSignal <= '1';
-            --     -- REPORT "Invalid Address" SEVERITY warning;
-            -- ELS
             IF EmptyStackExceptionSignal = '1' THEN
                 dataout <= ram(to_integer(unsigned((SP - 1))));
-                -- EmptyStackExceptionSignal <= '1';
-                -- REPORT "Pop Empty Stack" SEVERITY warning;
             ELSE
                 IF popsignal = '1' THEN
                     IF (controlsignal = '1') THEN
@@ -61,13 +55,5 @@ BEGIN
                 END IF;
             END IF;
         END IF;
-        -- IF rising_edge (clk) THEN
-        --     -- IF (address(31 DOWNTO 16) /= STD_LOGIC_VECTOR'(x"0000")) THEN
-        --     --     InvalidMemoryExceptionSignal <= '0';
-        --     -- ELS
-        --     -- IF EmptyStackExceptionSignal = '1' THEN
-        --     --     EmptyStackExceptionSignal <= '0';
-        --     -- END IF;
-        -- END IF;
     END PROCESS;
 END Memory;
