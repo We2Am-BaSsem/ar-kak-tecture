@@ -63,6 +63,8 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
     SIGNAL opCode_s : STD_LOGIC_VECTOR(4 DOWNTO 0);
     SIGNAL d1_s, d2_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
     SIGNAL MemData_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    signal old_flags_s: std_logic_vector(2 downto 0);
+    signal new_flags_s: std_logic_vector(2 downto 0);
     ---------------------------------------------------------------------------
     SIGNAL ExMemBufferInput, ExMemBufferOutput : STD_LOGIC_VECTOR(127 DOWNTO 0) := (OTHERS => '0');
     SIGNAL stackOut_s : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
@@ -227,8 +229,6 @@ BEGIN
         );
     ALU : ENTITY work.ALU(ALU)
         PORT MAP(
-            oldN => '0',
-            oldZ => '0',
             opCode => DecExBufferOutput(61 DOWNTO 57),
             d1 => d1_s,
             d2 => d2_s,

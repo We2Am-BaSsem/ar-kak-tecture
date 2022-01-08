@@ -121,7 +121,7 @@ ENTITY ALU IS
         opCode : IN STD_LOGIC_VECTOR(4 DOWNTO 0) := (OTHERS => '0');
         d1, d2, imm : IN STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
         ALUOut : OUT STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
-        newN, newZ, , en, enc : OUT STD_LOGIC := '0';
+        newN, newZ, en, enc : OUT STD_LOGIC := '0';
         cout : OUT STD_LOGIC := '0';
         ALUExceptionSignal : OUT STD_LOGIC := '0';
         EnableOutPort : OUT STD_LOGIC := '0'
@@ -153,8 +153,9 @@ ARCHITECTURE ALU OF ALU IS
 
     COMPONENT ALUToFlags IS
         PORT (
-            ALUOut : IN STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
-            newN, newZ : OUT STD_LOGIC := '0'
+   ALUSelectors : IN STD_LOGIC_VECTOR(1 DOWNTO 0) := (OTHERS => '0');
+        ALUOut : IN STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
+        newN, newZ, en, enc : OUT STD_LOGIC := '0'
         );
     END COMPONENT;
 BEGIN
