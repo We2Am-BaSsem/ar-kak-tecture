@@ -166,6 +166,7 @@ BEGIN
     DecExBufferInput(61 DOWNTO 57) <= opCode_s;
     DecExBufferInput(15 DOWNTO 0) <= fetched_instruction_buffer_output_fetchstage(15 DOWNTO 0);
     DecExBufferInput(73 DOWNTO 71) <= fetched_instruction_buffer_output_fetchstage(26 DOWNTO 24);
+    DecExBufferInput(74) <= InPortSignal_s;
 
     MemData_s <= MemWBBufferOutput(15 DOWNTO 0) WHEN MemWBBufferOutput(32) = '1'
             ELSE MemWBBufferOutput(31 DOWNTO 16);
@@ -186,7 +187,8 @@ BEGIN
             MemData => MemData_s,
             ExRdst  => ExMemBufferOutput(75 DOWNTO 73),
             ExData  => ExMemBufferOutput(63 DOWNTO 48),
-            Data => d1_s   
+            Data => d1_s,
+            InpPortSignal => DecExBufferInput(74)
         );
         DataForward2 : ENTITY work.DataForward(DataForward)
         PORT MAP(
@@ -196,7 +198,8 @@ BEGIN
             MemData => MemData_s,
             ExRdst  => ExMemBufferOutput(75 DOWNTO 73),
             ExData  => ExMemBufferOutput(63 DOWNTO 48),
-            Data => d2_s   
+            Data => d2_s,
+            InpPortSignal => DecExBufferInput(74)
         );
     ALU : ENTITY work.ALU(ALU)
         PORT MAP(
