@@ -42,9 +42,18 @@ ARCHITECTURE Memory_Stage OF Memory_Stage IS
     SIGNAL en : STD_LOGIC := '0';
 BEGIN
     en <= pushpsignal OR popsignal;
-    EmptyStackExceptionSignal <= '1' WHEN popsignal = '1' AND ((SP + 1 >= 2 ** 20) OR (controlsignal = '1' AND SP + 2 >= 2 ** 20))
+    EmptyStackExceptionSignal <= '1' WHEN popsignal = '1' AND SP = STD_LOGIC_VECTOR'(x"000FFFFF")
         ELSE
         '0';
+
+    DataMemory : Memory PORT MAP(
+        clk => clk,
+        we => we, re => re, pushpsignal => pushpsignal, popsignal => popsignal, controlsignal => controlsignal,
+        address => address, datain => datain, pc => pc, SP => SP,
+        EmptyStackExceptionSignal => EmptyStackExceptionSignal,
+        stackout => stackout, dataout => dataout
+    );
+
     newSP <= SP + 2 WHEN SP + 2 <= 2 ** 20 - 1 AND popsignal = '1' AND controlsignal = '1'
         ELSE
         SP + 1 WHEN SP + 1 <= 2 ** 20 - 1 AND popsignal = '1' AND controlsignal = '0'
@@ -52,13 +61,5 @@ BEGIN
         SP - 2 WHEN pushpsignal = '1' AND controlsignal = '1'
         ELSE
         SP - 1 WHEN pushpsignal = '1' AND controlsignal = '0';
-
     SP_Register : my_register PORT MAP(D => newSP, Q => SP, clk => clk, en => en);
-    DataMemory : Memory PORT MAP(
-        clk => clk,
-        we => we, re => re, pushpsignal => pushpsignal, popsignal => popsignal, controlsignal => controlsignal,
-        address => address, datain => datain, pc => pc, SP => newSP,
-        EmptyStackExceptionSignal => EmptyStackExceptionSignal,
-        stackout => stackout, dataout => dataout
-    );
 END Memory_Stage;

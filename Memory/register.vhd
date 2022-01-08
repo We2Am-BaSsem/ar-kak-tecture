@@ -13,7 +13,7 @@ ARCHITECTURE nbits_register OF my_register IS
 BEGIN
 	PROCESS (clk, en)
 	BEGIN
-		IF en = '1'AND rising_edge(clk) THEN
+		IF en = '1'AND falling_edge(clk) THEN
 			Q <= D;
 		END IF;
 	END PROCESS;

@@ -43,7 +43,7 @@ IN R5        #R5= 10, you should run this test case another time and load R5 wit
 NOP
 NOP
 STD R2,R5,200   #M[210]=5, Exception in the 2nd run
-STD R1,R5,201   #M[212]=19
+STD R1,R5,201   #M[211]=19
 LDD R3,R5,201   #R3=19
 LDD R4,R5,200   #R4=5
 POP R3  #exception

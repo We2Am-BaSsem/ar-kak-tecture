@@ -43,7 +43,7 @@ operandMap = {
     "ldd": ["r0", "r1", "i"],
     "std": ["r1", "r2", "i"],
     "ldm": ["r0", "i"],
-    "push": ["r0"],
+    "push": ["r1"],
     "pop": ["r0"],
     "jz": ["r0"],
     "jn": ["r0"],

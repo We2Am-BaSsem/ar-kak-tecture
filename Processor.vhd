@@ -26,30 +26,31 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
     SIGNAL fetched_instruction_buffer_output_fetchstage : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL fetched_instruction_buffer_output_decodestage : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     ------------------------------------------------------------------------
-    SIGNAL memRead_s,
-    memToReg_s,
-    memWrite_s,
+    SIGNAL
     regWrite_s,
-    pop_s,
-    push_s,
-    fnJmp_s,
+    -- memRead_s,
+    -- memToReg_s,
+    -- memWrite_s,
+    -- pop_s,
+    -- push_s,
+    -- fnJmp_s,
     flushDecode_s,
     flushExecute_s : STD_LOGIC; --outputs of control_unit 
     --todo: integrate with execution
     SIGNAL memEx_s : STD_LOGIC := '0';
     SIGNAL writeAddress_s : STD_LOGIC_VECTOR(2 DOWNTO 0);
     ---------------------------------------------------------------------------
-    SIGNAL readData1_s,
-    readData2_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    -- SIGNAL readData1_s,
+    -- readData2_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
     --outputs od register file  --todo: integrate with execution
     ---------------------------------------------------------------------------
     SIGNAL DecExBufferInput, DecExBufferOutput : STD_LOGIC_VECTOR(127 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL ALUOut_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    -- SIGNAL ALUOut_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
     SIGNAL EnableOutPort_s : STD_LOGIC := '0';
     SIGNAL InPortSignal_s : STD_LOGIC := '0';
     SIGNAL opCode_s : STD_LOGIC_VECTOR(4 DOWNTO 0);
-    SIGNAL d1_s, d2_s: STD_LOGIC_VECTOR(15 DOWNTO 0);
-    SIGNAL MemData_s: STD_LOGIC_VECTOR(15 DOWNTO 0);
+    SIGNAL d1_s, d2_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    SIGNAL MemData_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
     ---------------------------------------------------------------------------
     SIGNAL ExMemBufferInput, ExMemBufferOutput : STD_LOGIC_VECTOR(127 DOWNTO 0) := (OTHERS => '0');
     SIGNAL stackOut_s : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
@@ -96,6 +97,7 @@ BEGIN
             memWrite => DecExBufferInput(66),
             regWrite => DecExBufferInput(70),
             pop => DecExBufferInput(64),
+            push => DecExBufferInput(63),
             fnJmp => DecExBufferInput(62),
             flushDecode => flushDecode_s,
             flushExecute => flushExecute_s,
@@ -159,9 +161,6 @@ BEGIN
             en => EnableOutPort_s
         );
     ----------------------------------------------------------------
-    -- todo add push signal from Control Unit
-    DecExBufferInput(63) <= '0';
-    ----------------------------------------------------------------
     DecExBufferInput(56 DOWNTO 48) <= fetched_instruction_buffer_output_fetchstage(26 DOWNTO 18);
     DecExBufferInput(61 DOWNTO 57) <= opCode_s;
     DecExBufferInput(15 DOWNTO 0) <= fetched_instruction_buffer_output_fetchstage(15 DOWNTO 0);
@@ -169,7 +168,8 @@ BEGIN
     DecExBufferInput(74) <= InPortSignal_s;
 
     MemData_s <= MemWBBufferOutput(15 DOWNTO 0) WHEN MemWBBufferOutput(32) = '1'
-            ELSE MemWBBufferOutput(31 DOWNTO 16);
+        ELSE
+        MemWBBufferOutput(31 DOWNTO 16);
 
     DecExBuffer : ENTITY work.pipeline_buffer(pipeline_buffer)
         PORT MAP(
@@ -185,19 +185,19 @@ BEGIN
             ReadData => DecExBufferOutput(47 DOWNTO 32),
             MemRdst => MemWBBufferOutput(38 DOWNTO 36),
             MemData => MemData_s,
-            ExRdst  => ExMemBufferOutput(75 DOWNTO 73),
-            ExData  => ExMemBufferOutput(63 DOWNTO 48),
+            ExRdst => ExMemBufferOutput(75 DOWNTO 73),
+            ExData => ExMemBufferOutput(63 DOWNTO 48),
             Data => d1_s,
             InpPortSignal => DecExBufferInput(74)
         );
-        DataForward2 : ENTITY work.DataForward(DataForward)
+    DataForward2 : ENTITY work.DataForward(DataForward)
         PORT MAP(
             Rsrc => DecExBufferOutput(50 DOWNTO 48),
             ReadData => DecExBufferOutput(31 DOWNTO 16),
             MemRdst => MemWBBufferOutput(38 DOWNTO 36),
             MemData => MemData_s,
-            ExRdst  => ExMemBufferOutput(75 DOWNTO 73),
-            ExData  => ExMemBufferOutput(63 DOWNTO 48),
+            ExRdst => ExMemBufferOutput(75 DOWNTO 73),
+            ExData => ExMemBufferOutput(63 DOWNTO 48),
             Data => d2_s,
             InpPortSignal => DecExBufferInput(74)
         );

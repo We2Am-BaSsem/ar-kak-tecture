@@ -35,103 +35,63 @@ BEGIN
         -- flushExecute<='0'; 
         -- for some reason, if these are uncommented, 1 are output as X, will change to with Select 
 
-        -- IF (instruction = "00000"
-        --     OR instruction = "00001"
-        --     OR instruction = "00010"
-        --     OR instruction = "00101"
-        --     OR instruction = "10000"
-        --     OR instruction = "11000"
-        --     OR instruction = "11001"
-        --     OR instruction = "11010"
-        --     OR instruction = "11011") THEN
-        --     out_vector <= "0000000";
-        -- ELSIF (instruction = "00011"
-        --     OR instruction = "00100"
-        --     OR instruction = "00110"
-        --     OR instruction = "01000"
-        --     OR instruction = "01001"
-        --     OR instruction = "01010"
-        --     OR instruction = "01011"
-        --     OR instruction = "01100"
-        --     OR instruction = "10010") THEN
-        --     out_vector <= "0000100";
-        -- ELSIF (instruction = "10001") THEN
-        --     out_vector <= "0000110";
-        -- ELSIF (instruction = "10011") THEN
-        --     out_vector <= "0110100";
-        -- ELSIF (instruction = "10100") THEN
-        --     out_vector <= "0001000";
-        -- ELSIF (instruction = "11100") THEN
-        --     out_vector <= "0000001";
-        -- ELSIF (instruction = "11101"
-        --     OR instruction = "11111") THEN
-        --     out_vector <= "0000011";
-        -- ELSE
-        --     out_vector <= "0100001";
-        -- END IF;
-
-        if (instruction = "00000") THEN
+        IF (instruction = "00000"
+            OR instruction = "00001"
+            OR instruction = "00010"
+            OR instruction = "00101"
+            OR instruction = "10000"
+            OR instruction = "11000"
+            OR instruction = "11001"
+            OR instruction = "11010"
+            OR instruction = "11011") THEN
             out_vector <= "0000000";
-        elsif (instruction = "00001") THEN
-            out_vector <= "0000000";
-        elsif (instruction = "00010") THEN
-            out_vector <= "0000000";
-        elsif (instruction = "00011") THEN
+        ELSIF (instruction = "00011"
+            OR instruction = "00100"
+            OR instruction = "00110"
+            OR instruction = "01000"
+            OR instruction = "01001"
+            OR instruction = "01010"
+            OR instruction = "01011"
+            OR instruction = "01100"
+            OR instruction = "10010") THEN
+            out_vector <= "0000100";
+        ELSIF (instruction = "10001") THEN
+            out_vector <= "0000110";
+        ELSIF (instruction = "10011") THEN
+            out_vector <= "0110100";
+        ELSIF (instruction = "10100") THEN
             out_vector <= "0001000";
-        elsif (instruction = "00100") THEN
-            out_vector <= "0001000";
-        elsif (instruction = "00101") THEN
-            out_vector <= "0000000";
-        elsif (instruction = "00110") THEN
-            out_vector <= "0001000";
-        elsif (instruction = "01000") THEN
-            out_vector <= "0001000";
-        elsif (instruction = "01001") THEN
-            out_vector <= "0001000";
-        elsif (instruction = "01010") THEN
-            out_vector <= "0001000";
-        elsif (instruction = "01011") THEN
-            out_vector <= "0001000";
-        elsif (instruction = "01100") THEN
-            out_vector <= "0001000";
-        elsif (instruction = "10000") THEN
-            out_vector <= "0000010";
-        elsif (instruction = "10001") THEN
-            out_vector <= "0001100";
-        elsif (instruction = "10010") THEN
-            out_vector <= "0001000";
-        elsif (instruction = "10011") THEN
-            out_vector <= "1101000";
-        elsif (instruction = "10100") THEN
-            out_vector <= "0010000";
-        elsif (instruction = "11000") THEN
-            out_vector <= "0000000";
-        elsif (instruction = "11001") THEN
-            out_vector <= "0000000";
-        elsif (instruction = "11010") THEN
-            out_vector <= "0000000";
-        elsif (instruction = "11011") THEN
-            out_vector <= "0000000";
-        elsif (instruction = "11100") THEN
+        ELSIF (instruction = "11100") THEN
+            out_vector <= "0000001";
+        ELSIF (instruction = "11101"
+            OR instruction = "11111") THEN
             out_vector <= "0000011";
-        elsif (instruction = "11101") THEN
-            out_vector <= "0000101";
-        elsif (instruction = "11110") THEN
-            out_vector <= "1000011";
-        elsif (instruction = "11111") THEN
-            out_vector <= "0000101";
-        end if;
+        ELSE
+            out_vector <= "0100001";
+        END IF;
 
         IF (instruction = "10011" OR instruction = "11100" OR instruction = "11110") THEN
             out_vector(6) <= '1';
+            out_vector(4) <= '0';
+            out_vector(2) <= '0';
         ELSE
             out_vector(6) <= '0';
         END IF;
 
         IF (instruction = "10100" OR instruction = "11101" OR instruction = "11111") THEN
             out_vector(1) <= '1';
+            out_vector(4) <= '1';
+            out_vector(2) <= '1';
         ELSE
             out_vector(1) <= '0';
+        END IF;
+
+        IF (instruction = "10001") THEN
+            out_vector(3) <= '1';
+        ELSIF (instruction = "10000") then 
+            out_vector(5) <= '1';
+            out_vector(4) <= '1';
+            out_vector(2) <= '1';
         END IF;
     END PROCESS;
     inSignal <= '1' WHEN instruction = "00110";

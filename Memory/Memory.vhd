@@ -21,15 +21,16 @@ ARCHITECTURE Memory OF Memory IS
     TYPE ram_type IS ARRAY(0 TO 2 ** 20 - 1) OF STD_LOGIC_VECTOR(15 DOWNTO 0);
     SIGNAL ram : ram_type := (OTHERS => (OTHERS => '0'));
 BEGIN
-    PROCESS (clk) IS
+    PROCESS (clk, SP, popsignal, pushpsignal, controlsignal, datain) IS
         VARIABLE tempAddress : STD_LOGIC_VECTOR(31 DOWNTO 0) := STD_LOGIC_VECTOR'(x"00000000");
     BEGIN
-        IF rising_edge(clk) THEN
+        IF True THEN
             -- IF (address(31 DOWNTO 16) /= STD_LOGIC_VECTOR'(x"0000")) THEN
             --     InvalidMemoryExceptionSignal <= '1';
             --     -- REPORT "Invalid Address" SEVERITY warning;
             -- ELS
             IF EmptyStackExceptionSignal = '1' THEN
+                dataout <= ram(to_integer(unsigned((SP - 1))));
                 -- EmptyStackExceptionSignal <= '1';
                 -- REPORT "Pop Empty Stack" SEVERITY warning;
             ELSE
@@ -51,8 +52,8 @@ BEGIN
                         ram(to_integer(unsigned((SP - 1)))) <= pc(15 DOWNTO 0);
                         -- SP <= SP - 2;
                     ELSE
-                        ram(to_integer(unsigned((SP + 1)))) <= datain;
-                        -- SP <= SP - 1;
+                        ram(to_integer(unsigned((SP)))) <= datain;
+                        -- SP <= SP - 1;s
                     END IF;
                 ELSIF we = '1' THEN
                     tempAddress := X"0000" & address;
