@@ -57,7 +57,8 @@ force -freeze sim:/processor/InPort 16#F320 450
 
 
 
-mem load -i {D:/GitHub/ar-kak-tecture/Memory files/TwoOperandMemeory.mem} /processor/fetch_unit/instructionmemory/InstructionMemory
+mem load -i {D:/GitHub/ar-kak-tecture/Memory files/TwoOperand.mem} /processor/fetch_unit/instructionmemory/InstructionMemory
+mem load -i {D:/GitHub/ar-kak-tecture/Memory files/OneOperand.mem} /processor/Memory/DataMemory/ram
 
 
 force -freeze sim:/processor/rst 1 0

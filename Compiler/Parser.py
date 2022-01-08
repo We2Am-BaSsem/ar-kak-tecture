@@ -124,19 +124,13 @@ for line in file:
             immFlag = True
     if immFlag:
         codeLine[-1] = "1"
-    memory.append("".join(codeLine))
-    if immFlag and instructions[-1][0] == "x":
-        memory.append(
-            "{0:016b}".format(int(instructions[i + 1][1:].replace('"', ""), 16))
-        )
-    if immFlag and instructions[-1][0] == "d":
-        memory.append(س"{0:016b}".format(int(instructions[i + 1][1:].replace('"', ""))))
+    memory[address] = "".join(codeLine)
+    address += 1
+    if immFlag:
+        memory[address] = "{0:016b}".format(int(instructions[i + 1], 16))
+        address += 1
 
 outputFile = open(os.getcwd() + "/Compiler/Memory.mem", "w")
-
-
-
-outputFile = open(os.getcwd() + "/TwoOperandMemeory.mem", "w")
 
 outputFile.write(
     "// memory data file (do not edit the following line - required for mem load use)\n"

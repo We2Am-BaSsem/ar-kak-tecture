@@ -55,10 +55,6 @@ force -freeze sim:/processor/InPort 16#0019 150
 force -freeze sim:/processor/InPort 16#FFFF 250
 force -freeze sim:/processor/InPort 16#F320 350
 force -freeze sim:/processor/InPort 16#0010 450
-force -freeze sim:/processor/InPort 16#1010 550
-force -freeze sim:/processor/InPort 16#2E10 650
-force -freeze sim:/processor/InPort 16#3910 750
-force -freeze sim:/processor/InPort 16#451C 850
 
 
 

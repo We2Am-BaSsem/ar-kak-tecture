@@ -42,9 +42,9 @@ NOP
 IN R5        #R5= 10, you should run this test case another time and load R5 with FD60
 NOP
 NOP
-STD R2,200(R5)   #M[210]=5, Exception in the 2nd run
-STD R1,201(R5)   #M[212]=19
-LDD R3,201(R5)   #R3=19
-LDD R4,200(R5)   #R4=5
+STD R2,R5,200   #M[210]=5, Exception in the 2nd run
+STD R1,R5,201   #M[212]=19
+LDD R3,R5,201   #R3=19
+LDD R4,R5,200   #R4=5
 POP R3  #exception
 ADD R1, R2, R3 #should not execute as their is an exception
