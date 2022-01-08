@@ -19,12 +19,24 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
 
     SIGNAL pc_reg_out_sig : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL adder_output_sig : STD_LOGIC_VECTOR(31 DOWNTO 0);
+
+    SIGNAL new_instruction_address : STD_LOGIC_VECTOR(31 DOWNTO 0);
+
     SIGNAL cout_sig : STD_LOGIC;
     SIGNAL temp_zero : STD_LOGIC := '0';
 
     SIGNAL fetched_instruction_buffer_input_fetchstage : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL fetched_instruction_buffer_output_fetchstage : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL fetched_instruction_buffer_output_decodestage : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    
+    
+    SIGNAL ALU_exceptionaddress_sig : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL Stack_exceptionaddress_sig : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    
+    SIGNAL INT0_address_sig : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL INT1_address_sig : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+
+
     ------------------------------------------------------------------------
     SIGNAL memRead_s,
     memToReg_s,
@@ -63,9 +75,13 @@ BEGIN
         PORT MAP(
             clk => clk,
             rst => rst,
-            adder_output => adder_output_sig,
+            adder_output => new_instruction_address,
             instruction_out => fetched_instruction_buffer_input_fetchstage, -- this is the fetched instruction
-            pc_reg_out => pc_reg_out_sig
+            pc_reg_out => pc_reg_out_sig,        
+            ALU_exceptionaddress =>ALU_exceptionaddress_sig,
+            Stack_exceptionaddress=>Stack_exceptionaddress_sig,
+            INT0_address=>INT0_address_sig,
+            INT1_address=>INT1_address_sig
         );
     pcAdder : ENTITY work.PCNadder(PCarch_Nadder)
         PORT MAP(
@@ -75,6 +91,14 @@ BEGIN
             s => adder_output_sig,
             cout => cout_sig
         );
+        new_instruction_address <= adder_output_sig ;--when  stackexceptin='0' and pcchanged='0' else
+            -- branch_output when  stackexceptin='0' and pcchanged='1' else
+            -- Stack_exceptionaddress_sig when  stackexceptin='1' and pcchanged='0' else
+            -- branch_output ;
+
+
+
+
     fetched_instruction_buffer_fetchstage : ENTITY work.pipeline_buffer(pipeline_buffer)
         GENERIC MAP(n => 32)
         PORT MAP(
