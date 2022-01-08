@@ -14,7 +14,7 @@ ENTITY ControlUnit IS
         pop,
         fnJmp,
         flushDecode, flushExecute : OUT STD_LOGIC := '0'; --?
-        --outSignal : OUT STD_LOGIC := '0';
+        outSignal : OUT STD_LOGIC := '0';
         inSignal : OUT STD_LOGIC := '0'
     );
 END ENTITY ControlUnit;

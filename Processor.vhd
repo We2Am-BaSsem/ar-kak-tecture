@@ -223,12 +223,14 @@ BEGIN
 
     WriteBack : ENTITY work.WriteBack_Stage(WriteBack_Stage)
         PORT MAP(
+            regWriteSignalInput => MemWBBufferOutput(35), writeAddressInput => MemWBBufferOutput(38 DOWNTO 36),
             MemtoReg => MemWBBufferOutput(32), clk => clk, InSignal => MemWBBufferOutput(34),
             PopD => MemWBBufferOutput(15 DOWNTO 0), ALUout => MemWBBufferOutput(31 DOWNTO 16),
             Inport => In_Signal,
-            WBD => WriteBackData_s
+            WBD => WriteBackData_s,
+            regWriteSignalOutput => regWrite_s, writeAddressOutput => writeAddress_s
         );
-    regWrite_s <= MemWBBufferOutput(35);
-    writeAddress_s <= MemWBBufferOutput(38 DOWNTO 36);
+    -- regWrite_s <= MemWBBufferOutput(35);
+    -- writeAddress_s <= MemWBBufferOutput(38 DOWNTO 36);
     -- Out_Signal <= WriteBackData_s WHEN MemWBBufferOutput(33) = '1';
 END ARCHITECTURE arKAKtectureProcessor;
