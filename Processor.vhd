@@ -276,7 +276,7 @@ BEGIN
         carryflag         => flags_out_s(2),
         negativeflag      => flags_out_s(1),
         zeroflag          => flags_out_s(0),
-        instruction13to11 => fetched_instruction_buffer_output_decodestage(13 downto 11) ,
+        opCode => fetched_instruction_buffer_output_decodestage(31 downto 27) ,
         alu_ex            => '0',
         XofSP             => (OTHERS => '0'),
         POP               => '0',

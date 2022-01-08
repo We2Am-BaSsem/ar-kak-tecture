@@ -17,7 +17,7 @@ ENTITY branching IS
     alu_ex_address, PCregOutput,XofSP : IN STD_LOGIC_VECTOR(31 DOWNTO 0):= (OTHERS => '0');
     RRdst                             : in std_logic_vector(15 downto 0):= (OTHERS => '0');
     carryflag, negativeflag, zeroflag : IN STD_LOGIC:= '0';
-    instruction13to11                 : IN STD_LOGIC_VECTOR(2 DOWNTO 0):= (OTHERS => '0');
+    opCode                 : IN STD_LOGIC_VECTOR(4 DOWNTO 0):= (OTHERS => '0');
 
     alu_ex, POP, FnJMP                : IN STD_LOGIC:= '0';
 
@@ -28,19 +28,20 @@ END entity branching;
 
 ARCHITECTURE branching_architecture OF branching IS
 
-SIGNAL branchTaken : STD_LOGIC;
-SIGNAL first_mux, second_mux, third_mux : STD_LOGIC_VECTOR(31 DOWNTO 0);
+SIGNAL branchTaken                      : STD_LOGIC:= '0';
+SIGNAL pc_changed_temp                  : STD_LOGIC:= '0';
+SIGNAL first_mux, second_mux, third_mux : STD_LOGIC_VECTOR(31 DOWNTO 0):= (OTHERS => '0');
 
 BEGIN
-    process(instruction13to11,zeroflag,negativeflag,carryflag, RRdst, PCregOutput)
+    process(opCode,zeroflag,negativeflag,carryflag, RRdst, PCregOutput)
     begin
-        IF (instruction13to11 = "000") AND (zeroflag = '1') THEN
+        IF (opCode = "11000") AND (zeroflag = '1') THEN
             branchTaken <= '1';
-        ELSIF (instruction13to11 = "001") AND (negativeflag = '1') THEN
+        ELSIF (opCode = "11001") AND (negativeflag = '1') THEN
             branchTaken <= '1';
-        ELSIF (instruction13to11 = "010") AND (carryflag = '1') THEN
+        ELSIF (opCode = "11010") AND (carryflag = '1') THEN
             branchTaken <= '1';
-        ELSIF (instruction13to11 = "011") THEN
+        ELSIF (opCode = "11011") THEN
             branchTaken <= '1';
         ELSE
             branchTaken <= '0';
@@ -65,9 +66,12 @@ BEGIN
             third_mux <= second_mux;
         end if;
 
-        if (third_mux /= PCregOutput) then branchTaken <= '1'; end if ;
-    end process;
-    
+        if (third_mux /= PCregOutput) then pc_changed_temp <= '1';
+        else 
+        pc_changed_temp<='0';
+        end if ;
+        end process;
+        
     nextPC <= third_mux;
     pc_changed <= branchTaken;
 
