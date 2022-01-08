@@ -48,6 +48,8 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
     SIGNAL EnableOutPort_s : STD_LOGIC := '0';
     SIGNAL InPortSignal_s : STD_LOGIC := '0';
     SIGNAL opCode_s : STD_LOGIC_VECTOR(4 DOWNTO 0);
+    SIGNAL d1_s, d2_s: STD_LOGIC_VECTOR(15 DOWNTO 0);
+    SIGNAL MemData_s: STD_LOGIC_VECTOR(15 DOWNTO 0);
     ---------------------------------------------------------------------------
     SIGNAL ExMemBufferInput, ExMemBufferOutput : STD_LOGIC_VECTOR(127 DOWNTO 0) := (OTHERS => '0');
     SIGNAL stackOut_s : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
@@ -97,8 +99,8 @@ BEGIN
             fnJmp => DecExBufferInput(62),
             flushDecode => flushDecode_s,
             flushExecute => flushExecute_s,
-            outSignal => DecExBufferInput(68), --todo remove from buffer
-            inSignal => DecExBufferInput(69)
+            outSignal => DecExBufferInput(68), --useless
+            inSignal => DecExBufferInput(69) --useless
         );
 
     InPortSignal_s <= '1' WHEN fetched_instruction_buffer_output_fetchstage(31 DOWNTO 27) = "00110" ELSE
@@ -150,7 +152,7 @@ BEGIN
     OUTPORTREGISTER : ENTITY work.pipeline_buffer(pipeline_buffer)
         GENERIC MAP(n => 16)
         PORT MAP(
-            D => DecExBufferOutput(47 DOWNTO 32), --todo : use d1 from data forwarding unit
+            D => d1_s, --todo : make sure works right in sim
             Q => OutPort,
             clk => clk,
             rst => rst,
@@ -165,6 +167,9 @@ BEGIN
     DecExBufferInput(15 DOWNTO 0) <= fetched_instruction_buffer_output_fetchstage(15 DOWNTO 0);
     DecExBufferInput(73 DOWNTO 71) <= fetched_instruction_buffer_output_fetchstage(26 DOWNTO 24);
 
+    MemData_s <= MemWBBufferOutput(15 DOWNTO 0) WHEN MemWBBufferOutput(32) = '1'
+            ELSE MemWBBufferOutput(31 DOWNTO 16);
+
     DecExBuffer : ENTITY work.pipeline_buffer(pipeline_buffer)
         PORT MAP(
             D => DecExBufferInput,
@@ -173,13 +178,33 @@ BEGIN
             rst => rst,
             en => '1'
         );
+    DataForward1 : ENTITY work.DataForward(DataForward)
+        PORT MAP(
+            Rsrc => DecExBufferOutput(53 DOWNTO 51),
+            ReadData => DecExBufferOutput(47 DOWNTO 32),
+            MemRdst => MemWBBufferOutput(38 DOWNTO 36),
+            MemData => MemData_s,
+            ExRdst  => ExMemBufferOutput(75 DOWNTO 73),
+            ExData  => ExMemBufferOutput(63 DOWNTO 48),
+            Data => d1_s   
+        );
+        DataForward2 : ENTITY work.DataForward(DataForward)
+        PORT MAP(
+            Rsrc => DecExBufferOutput(50 DOWNTO 48),
+            ReadData => DecExBufferOutput(31 DOWNTO 16),
+            MemRdst => MemWBBufferOutput(38 DOWNTO 36),
+            MemData => MemData_s,
+            ExRdst  => ExMemBufferOutput(75 DOWNTO 73),
+            ExData  => ExMemBufferOutput(63 DOWNTO 48),
+            Data => d2_s   
+        );
     ALU : ENTITY work.ALU(ALU)
         PORT MAP(
             oldN => '0',
             oldZ => '0',
             opCode => DecExBufferOutput(61 DOWNTO 57),
-            d1 => DecExBufferOutput(47 DOWNTO 32),
-            d2 => DecExBufferOutput(31 DOWNTO 16),
+            d1 => d1_s,
+            d2 => d2_s,
             imm => DecExBufferOutput(15 DOWNTO 0),
             ALUOut => ExMemBufferInput(63 DOWNTO 48),
             EnableOutPort => EnableOutPort_s

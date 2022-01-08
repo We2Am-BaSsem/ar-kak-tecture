@@ -1,3 +1,4 @@
 ☐ WBData propagate correctly to register file
-☐ ALUOut start with 0001
+✔ ALUOut start with 0001 @done (1/8/2022, 4:38:42 AM)
 ☐ Assert that Write Back Stage is shifted 2 cycles
+☐ Make Added NOPs for hazards automatically added by the parser (and recheck it works after adding branching)
