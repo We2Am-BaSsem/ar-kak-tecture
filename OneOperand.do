@@ -52,7 +52,7 @@ force -freeze sim:/processor/clk 0 0, 1 {50 ps} -r 100
 force -freeze sim:/processor/InPort 16#F76A 0
 
 
-mem load -i {D:/GitHub/ar-kak-tecture/Memory files/OneOperand.mem} /processor/fetch_unit/instructionmemory/InstructionMemory
+mem load -i {D:/GitHub/ar-kak-tecture/Memory files/OneOperand.mem} /processor/fetch_unit/instructionmemory/InstructionMemory}
 
 
 force -freeze sim:/processor/rst 1 0
