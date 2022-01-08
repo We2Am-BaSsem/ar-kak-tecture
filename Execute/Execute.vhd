@@ -15,9 +15,8 @@ END ENTITY ALUControl;
 ARCHITECTURE ALUControl OF ALUControl IS
 BEGIN
 
-    IgnoreSignal <= '1' WHEN opCode = b"00000" OR opCode = b"00010" OR opCode = b"00101" OR opCode = b"00110" --todo: remove last check 00110
-        ELSE
-        '0';
+    IgnoreSignal <= '1' WHEN opCode = b"00000" OR opCode = b"00010" OR opCode = b"00101" OR opCode = b"00110" OR opCode(4 DOWNTO 3) = b"11" --todo: remove last check 00110
+        ELSE '0';
 
     EnableOutPort <= '1' WHEN opCode = b"00101" ELSE
         '0';

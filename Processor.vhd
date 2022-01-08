@@ -60,11 +60,13 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
     -- SIGNAL ALUOut_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
     SIGNAL EnableOutPort_s : STD_LOGIC := '0';
     SIGNAL InPortSignal_s : STD_LOGIC := '0';
+    SIGNAL enZandN_s : STD_LOGIC := '0';
+    SIGNAL enC_s : STD_LOGIC := '0';
+    SIGNAL flags_in_s : STD_LOGIC_VECTOR(2 downto 0);
+    SIGNAL flags_out_s : STD_LOGIC_VECTOR(2 downto 0);
     SIGNAL opCode_s : STD_LOGIC_VECTOR(4 DOWNTO 0);
     SIGNAL d1_s, d2_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
     SIGNAL MemData_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
-    signal old_flags_s: std_logic_vector(2 downto 0);
-    signal new_flags_s: std_logic_vector(2 downto 0);
     ---------------------------------------------------------------------------
     SIGNAL ExMemBufferInput, ExMemBufferOutput : STD_LOGIC_VECTOR(127 DOWNTO 0) := (OTHERS => '0');
     SIGNAL stackOut_s : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
@@ -234,8 +236,23 @@ BEGIN
             d2 => d2_s,
             imm => DecExBufferOutput(15 DOWNTO 0),
             ALUOut => ExMemBufferInput(63 DOWNTO 48),
-            EnableOutPort => EnableOutPort_s
+            EnableOutPort => EnableOutPort_s,
+            en => enZandN_s,
+            enc => enC_s,
+            newZ => flags_in_s(0),
+            newN => flags_in_s(1),
+            cout => flags_in_s(2)
         );
+    FlagsRegister : ENTITY work.FlagsRegister(rtl)
+        PORT MAP(
+            clk => clk,
+            rst => rst,
+            enNZ => enZandN_s,
+            enC => enC_s,
+            flags_in => flags_in_s,
+            flags_out => flags_out_s
+        );
+    
 
     -----------------------------------Memory--------------------------------
     ExMemBufferInput(71 DOWNTO 64) <= DecExBufferOutput(69) & DecExBufferOutput(68) & DecExBufferOutput(67) & DecExBufferOutput(66) & DecExBufferOutput(65)
