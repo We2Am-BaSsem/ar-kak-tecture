@@ -25,6 +25,15 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
     SIGNAL fetched_instruction_buffer_input_fetchstage : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL fetched_instruction_buffer_output_fetchstage : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL fetched_instruction_buffer_output_decodestage : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    
+    
+    SIGNAL ALU_exceptionaddress_sig : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL Stack_exceptionaddress_sig : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    
+    SIGNAL INT0_address_sig : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL INT1_address_sig : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+
+
     ------------------------------------------------------------------------
     SIGNAL memRead_s,
     memToReg_s,
@@ -65,7 +74,11 @@ BEGIN
             rst => rst,
             adder_output => adder_output_sig,
             instruction_out => fetched_instruction_buffer_input_fetchstage, -- this is the fetched instruction
-            pc_reg_out => pc_reg_out_sig
+            pc_reg_out => pc_reg_out_sig,        
+            ALU_exceptionaddress =>ALU_exceptionaddress_sig,
+            Stack_exceptionaddress=>Stack_exceptionaddress_sig,
+            INT0_address=>INT0_address_sig,
+            INT1_address=>INT1_address_sig
         );
     pcAdder : ENTITY work.PCNadder(PCarch_Nadder)
         PORT MAP(
