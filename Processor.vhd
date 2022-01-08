@@ -258,7 +258,7 @@ BEGIN
     ExMemBufferInput(71 DOWNTO 64) <= DecExBufferOutput(69) & DecExBufferOutput(68) & DecExBufferOutput(67) & DecExBufferOutput(66) & DecExBufferOutput(65)
     & DecExBufferOutput(64) & DecExBufferOutput(63) & DecExBufferOutput(62);
 
-    ExMemBufferInput(47 DOWNTO 0) <= DecExBufferOutput(47 DOWNTO 32) & fetched_instruction_buffer_output_decodestage;
+    ExMemBufferInput(47 DOWNTO 0) <= d1_s & fetched_instruction_buffer_output_decodestage;
     ExMemBufferInput(75 DOWNTO 72) <= DecExBufferOutput(73 DOWNTO 70);
     ExMemBuffer : ENTITY work.pipeline_buffer(pipeline_buffer)
         PORT MAP(

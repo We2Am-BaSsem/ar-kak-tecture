@@ -47,4 +47,5 @@ STD R1,R5,201   #M[211]=19
 LDD R3,R5,201   #R3=19
 LDD R4,R5,200   #R4=5
 POP R3  #exception
+NOP
 ADD R1, R2, R3 #should not execute as their is an exception

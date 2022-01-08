@@ -56,7 +56,7 @@ BEGIN
             OR instruction = "10010") THEN
             out_vector <= "0000100";
         ELSIF (instruction = "10001") THEN
-            out_vector <= "0000110";
+            out_vector <= "0000010";
         ELSIF (instruction = "10011") THEN
             out_vector <= "0110100";
         ELSIF (instruction = "10100") THEN
