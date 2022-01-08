@@ -11,7 +11,14 @@ ENTITY FetchUnit IS
 
         instruction_out : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         -- connect with value_to_add_bit in PCNadder
-        pc_reg_out : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0')
+        pc_reg_out : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+
+        ALU_exceptionaddress : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+        Stack_exceptionaddress : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+        
+        INT0_address : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+        INT1_address : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0')
+        
         -- connect it to a in PCNadder
     );
 END ENTITY FetchUnit;
@@ -34,7 +41,11 @@ BEGIN
             rst => rst,
             address => pc_reg_output,
             dataout => instruction_out,
-            beginning_address_of_operations => beginning_address_sig
+            beginning_address_of_operations => beginning_address_sig,
+            ALU_EX_address => ALU_exceptionaddress,
+            Stack_Exception_address => Stack_exceptionaddress,
+            int0_address =>INT0_address,
+            int1_address =>INT1_address
         );
     pc_reg : ENTITY work.PC_register(arch_PC_register)
         PORT MAP(
