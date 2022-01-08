@@ -45,29 +45,28 @@ BEGIN
                     tempAddress := X"0000" & address;
                     dataout <= ram(to_integer(unsigned((tempAddress))));
                 END IF;
-            END IF;
-        END IF;
-        IF falling_edge(clk) THEN
-            -- IF (address(31 DOWNTO 16) /= STD_LOGIC_VECTOR'(x"0000")) THEN
-            --     InvalidMemoryExceptionSignal <= '0';
-            -- ELS
-            -- IF EmptyStackExceptionSignal = '1' THEN
-            --     EmptyStackExceptionSignal <= '0';
-            -- END IF;
-
-            IF (pushpsignal = '1') THEN
-                IF (controlsignal = '1') THEN
-                    ram(to_integer(unsigned((SP)))) <= pc(31 DOWNTO 16);
-                    ram(to_integer(unsigned((SP - 1)))) <= pc(15 DOWNTO 0);
-                    -- SP <= SP - 2;
-                ELSE
-                    ram(to_integer(unsigned((SP)))) <= datain;
-                    -- SP <= SP - 1;
+                IF (pushpsignal = '1') THEN
+                    IF (controlsignal = '1') THEN
+                        ram(to_integer(unsigned((SP)))) <= pc(31 DOWNTO 16);
+                        ram(to_integer(unsigned((SP - 1)))) <= pc(15 DOWNTO 0);
+                        -- SP <= SP - 2;
+                    ELSE
+                        ram(to_integer(unsigned((SP + 1)))) <= datain;
+                        -- SP <= SP - 1;
+                    END IF;
+                ELSIF we = '1' THEN
+                    tempAddress := X"0000" & address;
+                    ram(to_integer(unsigned((tempAddress)))) <= datain;
                 END IF;
-            ELSIF we = '1' THEN
-                tempAddress := X"0000" & address;
-                ram(to_integer(unsigned((tempAddress)))) <= datain;
             END IF;
         END IF;
+        -- IF rising_edge (clk) THEN
+        --     -- IF (address(31 DOWNTO 16) /= STD_LOGIC_VECTOR'(x"0000")) THEN
+        --     --     InvalidMemoryExceptionSignal <= '0';
+        --     -- ELS
+        --     -- IF EmptyStackExceptionSignal = '1' THEN
+        --     --     EmptyStackExceptionSignal <= '0';
+        --     -- END IF;
+        -- END IF;
     END PROCESS;
 END Memory;

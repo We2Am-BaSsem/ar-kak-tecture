@@ -61,7 +61,7 @@ memException = 129
 interupt1 = 257
 interupt2 = 513
 
-file = open(os.getcwd() + "/Compiler/TwoOperand.asm", "r")
+file = open(os.getcwd() + "/Compiler/Memory.asm", "r")
 memory = ["0000000000000000"] * 2 ** 12
 code = []
 
@@ -124,11 +124,17 @@ for line in file:
             immFlag = True
     if immFlag:
         codeLine[-1] = "1"
-    memory[address] = "".join(codeLine)
-    address += 1
-    if immFlag:
-        memory[address] = "{0:016b}".format(int(instructions[i + 1], 16))
-        address += 1
+    memory.append("".join(codeLine))
+    if immFlag and instructions[-1][0] == "x":
+        memory.append(
+            "{0:016b}".format(int(instructions[i + 1][1:].replace('"', ""), 16))
+        )
+    if immFlag and instructions[-1][0] == "d":
+        memory.append(س"{0:016b}".format(int(instructions[i + 1][1:].replace('"', ""))))
+
+outputFile = open(os.getcwd() + "/Compiler/Memory.mem", "w")
+
+
 
 outputFile = open(os.getcwd() + "/TwoOperandMemeory.mem", "w")
 
