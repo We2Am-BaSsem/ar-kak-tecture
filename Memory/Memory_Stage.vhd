@@ -11,7 +11,7 @@ ENTITY Memory_Stage IS
         address : IN STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
         datain : IN STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
         pc : IN STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        InvalidMemoryExceptionSignal, EmptyStackExceptionSignal : INOUT STD_LOGIC := '0';
+        EmptyStackExceptionSignal : INOUT STD_LOGIC := '0';
         stackout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         dataout : OUT STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0')
     );
@@ -33,7 +33,7 @@ ARCHITECTURE Memory_Stage OF Memory_Stage IS
             datain : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
             pc : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
             SP : INOUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-            InvalidMemoryExceptionSignal, EmptyStackExceptionSignal : INOUT STD_LOGIC;
+            EmptyStackExceptionSignal : INOUT STD_LOGIC;
             stackout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
             dataout : OUT STD_LOGIC_VECTOR(15 DOWNTO 0)
         );
@@ -58,7 +58,7 @@ BEGIN
         clk => clk,
         we => we, re => re, pushpsignal => pushpsignal, popsignal => popsignal, controlsignal => controlsignal,
         address => address, datain => datain, pc => pc, SP => newSP,
-        InvalidMemoryExceptionSignal => InvalidMemoryExceptionSignal, EmptyStackExceptionSignal => EmptyStackExceptionSignal,
+        EmptyStackExceptionSignal => EmptyStackExceptionSignal,
         stackout => stackout, dataout => dataout
     );
 END Memory_Stage;

@@ -1,28 +1,29 @@
-library IEEE;
-use IEEE.std_logic_1164.all;
-use IEEE.numeric_std.all;
+LIBRARY IEEE;
+USE IEEE.std_logic_1164.ALL;
+USE IEEE.numeric_std.ALL;
 
-entity ControlUnit is
-    port (
-        instruction     :     in std_logic_vector(4 downto 0); -- slice [15,11] of the total opcode
+ENTITY ControlUnit IS
+    PORT (
+        instruction : IN STD_LOGIC_VECTOR(4 DOWNTO 0); -- slice [15,11] of the total opcode
         aluEx,
-        memEx           :     in std_logic;
+        memEx : IN STD_LOGIC;
         memRead,
         memToReg,
         memWrite,
         regWrite,
-        pop,     
-        fnJmp,   
-        flushDecode,
-        flushExecute    :   out std_logic    --?
+        pop,
+        fnJmp,
+        flushDecode, flushExecute : OUT STD_LOGIC := '0'; --?
+        outSignal : OUT STD_LOGIC := '0';
+        inSignal : OUT STD_LOGIC := '0'
     );
-end entity ControlUnit;
+END ENTITY ControlUnit;
 
-architecture dataflow of ControlUnit is
-    signal out_vector: std_logic_vector(5 downto 0); --will work on output signals first without exception
-begin
-    process(instruction)
-    begin
+ARCHITECTURE dataflow OF ControlUnit IS
+    SIGNAL out_vector : STD_LOGIC_VECTOR(5 DOWNTO 0); --will work on output signals first without exception
+BEGIN
+    PROCESS (instruction)
+    BEGIN
         -- memRead<='0';
         -- memToReg<='0';
         -- memWrite<='0';
@@ -33,46 +34,48 @@ begin
         -- flushExecute<='0'; 
         -- for some reason, if these are uncommented, 1 are output as X, will change to with Select 
 
-        if (instruction = "00000" 
-            or instruction = "00001" 
-            or instruction = "00010"
-            or instruction = "00101"
-            or instruction = "10000"
-            or instruction = "11000"
-            or instruction = "11001"
-            or instruction = "11010"
-            or instruction = "11011" )then
-                out_vector <= "000000";           
-        elsif (instruction = "00011"
-            or instruction = "00100"
-            or instruction = "00110"
-            or instruction = "01000"
-            or instruction = "01001"
-            or instruction = "01010"
-            or instruction = "01011"
-            or instruction = "01100"
-            or instruction = "10010" )then
-                out_vector <= "000100";
-        elsif (instruction = "10001") then
+        IF (instruction = "00000"
+            OR instruction = "00001"
+            OR instruction = "00010"
+            OR instruction = "00101"
+            OR instruction = "10000"
+            OR instruction = "11000"
+            OR instruction = "11001"
+            OR instruction = "11010"
+            OR instruction = "11011") THEN
+            out_vector <= "000000";
+        ELSIF (instruction = "00011"
+            OR instruction = "00100"
+            OR instruction = "00110"
+            OR instruction = "01000"
+            OR instruction = "01001"
+            OR instruction = "01010"
+            OR instruction = "01011"
+            OR instruction = "01100"
+            OR instruction = "10010") THEN
+            out_vector <= "000100";
+        ELSIF (instruction = "10001") THEN
             out_vector <= "000110";
-        elsif (instruction = "10011") then
+        ELSIF (instruction = "10011") THEN
             out_vector <= "110100";
-        elsif (instruction = "10100")then
+        ELSIF (instruction = "10100") THEN
             out_vector <= "001000";
-        elsif (instruction = "11100") then
+        ELSIF (instruction = "11100") THEN
             out_vector <= "000001";
-        elsif (instruction = "11101"
-            or instruction = "11111") then
-                out_vector <= "000011";
-        else out_vector <= "100001"; 
-        end if;
-    end process;
-    
-    memRead<=out_vector(5);
-    memToReg<=out_vector(4);
-    memWrite<=out_vector(3);
-    regWrite<=out_vector(2);
-    pop<=out_vector(1);     
-    fnJmp<=out_vector(0);       
-    
-end architecture dataflow;
+        ELSIF (instruction = "11101"
+            OR instruction = "11111") THEN
+            out_vector <= "000011";
+        ELSE
+            out_vector <= "100001";
+        END IF;
+    END PROCESS;
+
+    inSignal <= '1' WHEN instruction = "00110";
+    --outSignal <= '1' WHEN instruction = "00101";
+    memRead <= out_vector(5);
+    memToReg <= out_vector(4);
+    memWrite <= out_vector(3);
+    regWrite <= out_vector(2);
+    pop <= out_vector(1);
+    fnJmp <= out_vector(0);
+END ARCHITECTURE dataflow;
