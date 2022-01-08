@@ -49,7 +49,12 @@ add wave -position insertpoint sim:/processor/WriteBack/*
 
 
 force -freeze sim:/processor/clk 0 0, 1 {50 ps} -r 100
-force -freeze sim:/processor/InPort 16#FFAA 0
+#force -freeze sim:/processor/InPort 16#FFAA 0
+
+force -freeze sim:/processor/InPort 16#0005 150
+force -freeze sim:/processor/InPort 16#0019 250
+force -freeze sim:/processor/InPort 16#FFFF 350
+force -freeze sim:/processor/InPort 16#F320 450
 
 
 
