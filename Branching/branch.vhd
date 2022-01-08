@@ -4,15 +4,16 @@ ENTITY branching IS
 
     PORT (
 
-        ALUEx, StackEx, PCregOutput, RRdst : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        alu_ex_address, PCregOutput : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         --pc reg output has pc_of_current_instruction+1 (or pc_of_current_instructionpc+2)
+        RRdst: in std_logic_vector(15 downto 0)
         carryflag, negativeflag, zeroflag : IN STD_LOGIC;
         instruction13to11 : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
 
-        FlushDecode, FlushEx, XofSP, POP, FnJMP : IN STD_LOGIC;
+        alu_ex, XofSP, POP, FnJMP : IN STD_LOGIC;
 
         nextPC : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-        branch_taken: OUT STD_LOGIC --input to mux at PC
+        pc_changed: OUT STD_LOGIC --input to mux at PC
     );
 END branching;
 
@@ -21,14 +22,14 @@ SIGNAL first_mux, second_mux, third_mux : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
 ARCHITECTURE branching_architecture OF branching IS
 BEGIN
-    process(instruction13to11,zeroflag,negativeflag,carryflag)
+    process(instruction13to11,zeroflag,negativeflag,carryflag, RRdst, PCregOutput)
     begin
         IF (instruction13to11 = "000") AND (zeroflag = 1) THEN
             branchTaken <= "1";
         ELSIF (instruction13to11 = "001") AND (negativeflag = 1) THEN
-                branchTaken <= "1";
+            branchTaken <= "1";
         ELSIF (instruction13to11 = "010") AND (carryflag = 1) THEN
-                    branchTaken <= "1";
+            branchTaken <= "1";
         ELSIF (instruction13to11 = "011") THEN
             branchTaken <= "1";
         ELSE
@@ -36,16 +37,14 @@ BEGIN
         end if;
 
         IF (branchTaken = "1") THEN
-            first_mux <= RRdst;
+            first_mux <= (31 downto 16 => RRdst(15)) & RRdst;
         ELSE
             first_mux <= PCregOutput;
         end if;
 
         --here should be the code of secondmux
-        IF (Flushdecode = "1") and (FlushEx = "0") THEN
-            second_mux <= ALUEx
-        ELSIF (Flushdecode = "1") and (FlushEx = "1") THEN
-            second_mux <= StackEx
+        IF (alu_ex = "1") THEN
+            second_mux <= alu_ex_address;
         ELSE
             second_mux <= first_mux;
         end if; 
@@ -55,8 +54,11 @@ BEGIN
         ELSE
             third_mux <= second_mux;
         end if;
+
+        if (third_mux /= PCregOutput) then branchTaken <= '1';
     end process;
     
-    branch_taken <= branchTaken;
+    nextPC <= third_mux;
+    pc_changed <= branchTaken;
 
 END ARCHITECTURE
