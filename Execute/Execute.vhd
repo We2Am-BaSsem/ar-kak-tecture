@@ -96,6 +96,7 @@ USE IEEE.STD_LOGIC_UNSIGNED.ALL;
 ENTITY ALUToFlags IS
     PORT (
         ALUSelectors : IN STD_LOGIC_VECTOR(1 DOWNTO 0) := (OTHERS => '0');
+        opCode : IN STD_LOGIC_VECTOR(4 DOWNTO 0) := (OTHERS => '0');
         ALUOut : IN STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
         newN, newZ, en, enc : OUT STD_LOGIC := '0'
     );
@@ -106,8 +107,8 @@ BEGIN
     newN <= ALUOut(15);
     newZ <= '1' WHEN ALUOut = x"0000" 
         ELSE '0';
-    en <= '0' WHEN ALUSelectors = b"11" ELSE '1';
-    enC <= '1' WHEN ALUSelectors = b"00" ELSE '0';
+    en <= '1' WHEN (opCode(4 DOWNTO 3) = b"01" AND opCode(2 DOWNTO 0) /= b"010") OR opCode = b"00100" OR opCode = b"00011" ELSE '0';
+    enC <= '1' WHEN (opCode(4 DOWNTO 3) = b"01" AND opCode(2 DOWNTO 1) /= b"01") OR opCode = b"00100" OR opCode = b"00010" ELSE '0';
 END ALUToFlags;
 
 LIBRARY IEEE;
@@ -132,6 +133,7 @@ ARCHITECTURE ALU OF ALU IS
     SIGNAL ALUSelectors : STD_LOGIC_VECTOR(6 DOWNTO 0) := (OTHERS => '0');
     SIGNAL ALUOutSig : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
     SIGNAL IgnoreSignal_s : STD_LOGIC := '0';
+    SIGNAL cout_s : STD_LOGIC := '0';
     COMPONENT ALUControl IS
         PORT (
             IgnoreSignal : OUT STD_LOGIC := '0';
@@ -152,19 +154,24 @@ ARCHITECTURE ALU OF ALU IS
 
     COMPONENT ALUToFlags IS
         PORT (
-   ALUSelectors : IN STD_LOGIC_VECTOR(1 DOWNTO 0) := (OTHERS => '0');
-        ALUOut : IN STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
-        newN, newZ, en, enc : OUT STD_LOGIC := '0'
+            ALUSelectors : IN STD_LOGIC_VECTOR(1 DOWNTO 0) := (OTHERS => '0');
+            opCode : IN STD_LOGIC_VECTOR(4 DOWNTO 0) := (OTHERS => '0');
+            ALUOut : IN STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
+            newN, newZ, en, enc : OUT STD_LOGIC := '0'
         );
     END COMPONENT;
 BEGIN
     Control : ALUControl PORT MAP(IgnoreSignal_s, opCode, ALUSelectors, EnableOutPort);
-    Compute : ALUCompute PORT MAP(ALUSelectors, d1, d2, imm, ALUOutSig, cout);
-    ToFlags : ALUToFlags PORT MAP(ALUSelectors(1 DOWNTO 0), ALUOutSig, newN, newZ, en, enc);
+    Compute : ALUCompute PORT MAP(ALUSelectors, d1, d2, imm, ALUOutSig, cout_s);
+    ToFlags : ALUToFlags PORT MAP(ALUSelectors(1 DOWNTO 0), opCode, ALUOutSig, newN, newZ, en, enc);
 
     ALUOut <= ALUOutSig WHEN IgnoreSignal_s = '0'
         ELSE
         (OTHERS => '0');
+    
+    --enc <= '1' WHEN opCode = b"00010" ELSE '0' WHEN IgnoreSignal_s = '1' ELSE enc_s;
+    cout <= '1' WHEN opCode = b"00010" ELSE cout_s;
+    
 
     ALUExceptionSignal <= '1' WHEN ALUOutSig >= x"FF00" AND opCode(4 DOWNTO 1) = b"1000" ELSE
         '0';

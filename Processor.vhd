@@ -230,7 +230,7 @@ BEGIN
             ExRdst => ExMemBufferOutput(75 DOWNTO 73),
             ExData => ExMemBufferOutput(63 DOWNTO 48),
             Data => d1_s,
-            InpPortSignal => DecExBufferInput(74)
+            InpPortSignal => DecExBufferOutput(74)
         );
     DataForward2 : ENTITY work.DataForward(DataForward)
         PORT MAP(
@@ -241,7 +241,7 @@ BEGIN
             ExRdst => ExMemBufferOutput(75 DOWNTO 73),
             ExData => ExMemBufferOutput(63 DOWNTO 48),
             Data => d2_s,
-            InpPortSignal => DecExBufferInput(74)
+            InpPortSignal => DecExBufferOutput(74)
         );
     ALU : ENTITY work.ALU(ALU)
         PORT MAP(
