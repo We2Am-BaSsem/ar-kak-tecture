@@ -210,7 +210,7 @@ BEGIN
     DecExBufferInput(15 DOWNTO 0) <= fetched_instruction_buffer_output_fetchstage(15 DOWNTO 0);
     DecExBufferInput(73 DOWNTO 71) <= fetched_instruction_buffer_output_fetchstage(26 DOWNTO 24);
     DecExBufferInput(74) <= InPortSignal_s;
-
+    DecExBufferInput(106 DOWNTO 75) <= fetched_instruction_buffer_output_decodestage(63 DOWNTO 32);
     MemData_s <= MemWBBufferOutput(15 DOWNTO 0) WHEN MemWBBufferOutput(32) = '1'
         ELSE
         MemWBBufferOutput(31 DOWNTO 16);
@@ -273,6 +273,7 @@ BEGIN
     BranchALUStage : ENTITY work.branching(branching_architecture)
         PORT MAP(
             alu_ex_address => ALU_exceptionaddress_sig,
+            mem_ex_address => Stack_exceptionaddress_sig,
             PCregOutput => fetched_instruction_buffer_output_decodestage(63 DOWNTO 32),
             RRdst => d1_s, --DecExBufferOutput(47 DOWNTO 32),
             carryflag => flags_out_s(2),
@@ -280,6 +281,7 @@ BEGIN
             zeroflag => flags_out_s(0),
             opCode => DecExBufferOutput(61 DOWNTO 57), --fetched_instruction_buffer_output_decodestage(31 downto 27) ,
             alu_ex => aluEx_s,
+            mem_ex => memEx_s,
             XofSP => (OTHERS => '0'),
             POP => '0',
             PUSH => DecExBufferInput(63),
@@ -292,7 +294,7 @@ BEGIN
     ExMemBufferInput(71 DOWNTO 64) <= DecExBufferOutput(69) & DecExBufferOutput(68) & DecExBufferOutput(67) & DecExBufferOutput(66) & DecExBufferOutput(65)
     & DecExBufferOutput(64) & DecExBufferOutput(63) & DecExBufferOutput(62);
 
-    ExMemBufferInput(47 DOWNTO 0) <= d1_s & fetched_instruction_buffer_output_decodestage(31 DOWNTO 0);
+    ExMemBufferInput(47 DOWNTO 0) <= d1_s & DecExBufferOutput(106 DOWNTO 75);
     ExMemBufferInput(75 DOWNTO 72) <= DecExBufferOutput(73 DOWNTO 70);
 
     --flush_EX_MEM <= '1' when rst = '1' or memEx_s = '1' else '0';

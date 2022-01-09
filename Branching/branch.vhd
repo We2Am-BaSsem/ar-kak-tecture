@@ -11,12 +11,12 @@ USE IEEE.std_logic_unsigned.ALL;
 ENTITY branching IS
 
     PORT (
-        alu_ex_address, PCregOutput, XofSP : IN STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+        alu_ex_address, mem_ex_address, PCregOutput, XofSP : IN STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         RRdst : IN STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
         carryflag, negativeflag, zeroflag : IN STD_LOGIC := '0';
         opCode : IN STD_LOGIC_VECTOR(4 DOWNTO 0) := (OTHERS => '0');
 
-        alu_ex, POP, PUSH, FnJMP, clk : IN STD_LOGIC := '0';
+        alu_ex, mem_ex, POP, PUSH, FnJMP, clk : IN STD_LOGIC := '0';
 
         nextPC : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         pc_changed : OUT STD_LOGIC := '0' --input to mux at PC
@@ -30,7 +30,7 @@ ARCHITECTURE branching_architecture OF branching IS
     SIGNAL first_mux, second_mux, third_mux : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
 
 BEGIN
-    PROCESS (opCode, RRdst, zeroflag, negativeflag, POP, PUSH, FnJMP, alu_ex, branchTaken, clk)
+    PROCESS (opCode, RRdst, zeroflag, negativeflag, POP, PUSH, FnJMP, alu_ex, mem_ex, branchTaken, clk)
         --process(opCode,zeroflag,negativeflag,carryflag, RRdst, PCregOutput)
     BEGIN
         --if(rising_edge(clk)) then
@@ -57,11 +57,16 @@ BEGIN
             pc_changed <= '1';
         ELSIF (opCode = "11110")  THEN
             --nextPC <= XofSP;
-            --nextPC <= "0000000000000000" & RRdst;
+        IF (mem_ex = '1') THEN
+            nextPC <= mem_ex_address;
             pc_changed <= '1';
         ELSIF (alu_ex = '1') THEN
             nextPC <= alu_ex_address;
             pc_changed <= '1';
+        ELSIF (POP = '1') AND (FnJMP = '1') THEN
+            nextPC <= XofSP;
+            pc_changed <= '1';
+
         ELSIF (branchTaken = '1') THEN
             nextPC <= "0000000000000000" & RRdst;
             pc_changed <= '1';

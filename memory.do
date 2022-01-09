@@ -37,6 +37,7 @@ add wave -position insertpoint sim:/processor/ALU/*
 add wave -position insertpoint sim:/processor/BranchALUStage/*
 add wave -position insertpoint sim:/processor/Memory/*
 add wave -position insertpoint sim:/processor/WriteBack/*
+add wave -position insertpoint sim:/processor/Memory/SP_Register/*
 
 
 
