@@ -37,7 +37,7 @@ Push R4   #sp=FFFFFFFE, M[FFFFFFFF]=300
 INT 2     #SP=FFFFFFFC, M[FFFFFFFD]=half next PC,M[FFFFFFFE]=other half next PC
 JMP R1 
 INC R1	  # this statement shouldn't be executed
- 
+
 #check flag fowarding  
 .ORG 30
 AND R5,R1,R5   #R5=0 , Z = 1

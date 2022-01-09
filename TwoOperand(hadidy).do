@@ -12,19 +12,10 @@ sim:/processor/temp_zero \
 sim:/processor/fetched_instruction_buffer_input_fetchstage \
 sim:/processor/fetched_instruction_buffer_output_fetchstage \
 sim:/processor/fetched_instruction_buffer_output_decodestage \
-sim:/processor/memRead_s \
-sim:/processor/memToReg_s \
-sim:/processor/memWrite_s \
 sim:/processor/regWrite_s \
-sim:/processor/pop_s \
-sim:/processor/push_s \
-sim:/processor/fnJmp_s \
 sim:/processor/flushDecode_s \
 sim:/processor/flushExecute_s \
 sim:/processor/memEx_s \
-sim:/processor/readData1_s \
-sim:/processor/readData2_s \
-sim:/processor/ALUOut_s \
 sim:/processor/ExMemBufferInput \
 sim:/processor/ExMemBufferOutput \
 sim:/processor/stackOut_s \
@@ -43,6 +34,19 @@ add wave -position insertpoint sim:/processor/ALU/*
 add wave -position insertpoint sim:/processor/Memory/*
 add wave -position insertpoint sim:/processor/WriteBack/*
 
+
+
+
+
+
+add wave -position insertpoint sim:/processor/fetch_unit/*
+add wave -position insertpoint sim:/processor/pcAdder/*
+add wave -position insertpoint sim:/processor/control_unit/*
+add wave -position insertpoint sim:/processor/register_file/*
+add wave -position insertpoint sim:/processor/ALU/*
+add wave -position insertpoint sim:/processor/Memory/*
+add wave -position insertpoint sim:/processor/WriteBack/*
+add wave -position insertpoint sim:/processor/BranchALUStage/*
 
 
 
