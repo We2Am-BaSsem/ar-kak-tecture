@@ -45,10 +45,10 @@ operandMap = {
     "ldm": ["r0", "i"],
     "push": ["r1"],
     "pop": ["r0"],
-    "jz": ["r0"],
-    "jn": ["r0"],
-    "jc": ["r0"],
-    "jmp": ["r0"],
+    "jz": ["r1"],
+    "jn": ["r1"],
+    "jc": ["r1"],
+    "jmp": ["r1"],
     "call": ["r0"],
     "ret": [],
     "int": ["i"],
@@ -73,6 +73,7 @@ def memoryInserion(address, index):
 
 address = 0
 for line in file:
+    print(line)
     if line[0] == "#" or line == "\n":
         continue
     if "#" in line:

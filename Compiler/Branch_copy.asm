@@ -30,10 +30,7 @@ INC R1	  # this statement shouldn't be executed
 .ORG 30
 MOV R6,R2
 AND R5,R1,R5   #R5=0 , Z = 1
-JZ  R2      #Jump taken, Z = 0
-SETC        # this statement shouldn't be executed, C-->1
-
-.ORG 50
 INC R6
-NOP
+INC R6
+INC R6
 NOP
