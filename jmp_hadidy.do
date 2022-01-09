@@ -24,7 +24,11 @@ sim:/processor/MemWBBufferInput \
 sim:/processor/MemWBBufferOutput \
 sim:/processor/WriteBackData_s  \
 sim:/processor/DecExBufferInput \
-sim:/processor/DecExBufferOutput
+sim:/processor/DecExBufferOutput \
+sim:/processor/flush_IF_ID \
+sim:/processor/flush_ID_EX \
+sim:/processor/flush_EX_MEM \
+sim:/processor/pcchanged_sig
 
 add wave -position insertpoint sim:/processor/fetch_unit/*
 add wave -position insertpoint sim:/processor/pcAdder/*

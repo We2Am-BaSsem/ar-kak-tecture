@@ -81,9 +81,11 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
     SIGNAL WriteBackData_s : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
 
     --------------------------------buffer resets------------------------------------
-    signal flush_IF_ID: std_logic := 0;
-    signal flush_ID_EX: std_logic := 0;
-    signal flush_EX_MEM: std_logic := 0;
+    signal flush_IF_ID  : std_logic := '0';
+    signal flush_ID_EX  : std_logic := '0';
+    signal flush_EX_MEM : std_logic := '0';
+
+    signal flush_before_ALU : std_logic := '0';
     -- signal flush_MEM_WB: std_logic := 0; not needed
 BEGIN
     -----------------------------------Fetch unit--------------------------------
@@ -118,7 +120,12 @@ BEGIN
 
 
     fetch_decode_buffer_input<=adder_output_sig & fetched_instruction_buffer_input_fetchstage;
-    flush_IF_ID <= '1' when rst = '1' or pcchanged_sig = '1' or memEx_s ='1' else '0';
+
+
+    --flush_IF_ID <= '1' when (rst = '1') or (pcchanged_sig = '1') or (memEx_s ='1') else '0';
+    flush_IF_ID <= rst or pcchanged_sig or memEx_s;
+
+
     --fetch decode stage
     fetched_instruction_buffer_fetchstage : ENTITY work.pipeline_buffer(pipeline_buffer)
     -- 63 down to 32 is the new instruction address
@@ -172,7 +179,9 @@ BEGIN
         );
 
 
-    flush_ID_EX <= '1' when rst = '1' or pcchanged_sig = '1' or memEx_s ='1' else '0';
+    --flush_ID_EX <= '1' when rst = '1' or pcchanged_sig = '1' or memEx_s ='1' else '0';
+    flush_ID_EX <= rst or pcchanged_sig or memEx_s ;
+
     --fetched instruction buffer for this stage
     --decode execute stage
     fetched_instruction_buffer_decodestage : ENTITY work.pipeline_buffer(pipeline_buffer)
@@ -303,7 +312,8 @@ BEGIN
     ExMemBufferInput(47 DOWNTO 0) <= DecExBufferOutput(47 DOWNTO 32) & fetched_instruction_buffer_output_decodestage(31 downto 0);
     ExMemBufferInput(75 DOWNTO 72) <= DecExBufferOutput(73 DOWNTO 70);
 
-    flush_EX_MEM <= '1' when rst = '1' or memEx_s = '1' else '0';
+    --flush_EX_MEM <= '1' when rst = '1' or memEx_s = '1' else '0';
+    flush_EX_MEM <= rst or memEx_s;
     ExMemBuffer : ENTITY work.pipeline_buffer(pipeline_buffer)
         PORT MAP(
             D => ExMemBufferInput,

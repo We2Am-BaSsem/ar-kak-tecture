@@ -23,6 +23,8 @@ IN R1     #R1=30
 IN R2     #R2=50
 IN R3     #R3=100
 IN R4     #R4=300
+INC R4
+INC R4
 JMP R1 
 INC R1	  # this statement shouldn't be executed
 
@@ -33,4 +35,5 @@ AND R5,R1,R5   #R5=0 , Z = 1
 INC R6
 INC R6
 INC R6
+JMP R1
 NOP
