@@ -12,19 +12,10 @@ sim:/processor/temp_zero \
 sim:/processor/fetched_instruction_buffer_input_fetchstage \
 sim:/processor/fetched_instruction_buffer_output_fetchstage \
 sim:/processor/fetched_instruction_buffer_output_decodestage \
-sim:/processor/memRead_s \
-sim:/processor/memToReg_s \
-sim:/processor/memWrite_s \
 sim:/processor/regWrite_s \
-sim:/processor/pop_s \
-sim:/processor/push_s \
-sim:/processor/fnJmp_s \
 sim:/processor/flushDecode_s \
 sim:/processor/flushExecute_s \
 sim:/processor/memEx_s \
-sim:/processor/readData1_s \
-sim:/processor/readData2_s \
-sim:/processor/ALUOut_s \
 sim:/processor/ExMemBufferInput \
 sim:/processor/ExMemBufferOutput \
 sim:/processor/stackOut_s \
@@ -47,18 +38,16 @@ add wave -position insertpoint sim:/processor/WriteBack/*
 
 
 
-
 force -freeze sim:/processor/clk 0 0, 1 {50 ps} -r 100
 
-force -freeze sim:/processor/InPort 16#0005 150
-force -freeze sim:/processor/InPort 16#0019 250
-force -freeze sim:/processor/InPort 16#FFFF 350
-force -freeze sim:/processor/InPort 16#F320 450
+force -freeze sim:/processor/InPort 16#0019 150
+force -freeze sim:/processor/InPort 16#FFFF 250
+force -freeze sim:/processor/InPort 16#F320 350
+force -freeze sim:/processor/InPort 16#0010 450
 
 
 
-mem load -i {D:/GitHub/ar-kak-tecture/Memory files/TwoOperand.mem} /processor/fetch_unit/instructionmemory/InstructionMemory
-mem load -i {D:/GitHub/ar-kak-tecture/Memory files/OneOperand.mem} /processor/Memory/DataMemory/ram
+mem load -i {D:/3A/CA/project/ar-kak-tecture/Memory files/Memory.mem} /processor/fetch_unit/instructionmemory/InstructionMemory
 
 
 force -freeze sim:/processor/rst 1 0
@@ -66,4 +55,5 @@ run 25 ps
 force -freeze sim:/processor/rst 0 0
 run 25 ps
 
+# run 1000 ps
 run 5000 ps

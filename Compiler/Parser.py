@@ -43,7 +43,7 @@ operandMap = {
     "ldd": ["r0", "r1", "i"],
     "std": ["r1", "r2", "i"],
     "ldm": ["r0", "i"],
-    "push": ["r0"],
+    "push": ["r1"],
     "pop": ["r0"],
     "jz": ["r0"],
     "jn": ["r0"],
@@ -61,7 +61,7 @@ memException = 129
 interupt1 = 257
 interupt2 = 513
 
-file = open(os.getcwd() + "/Compiler/TwoOperand.asm", "r")
+file = open(os.getcwd() + "/Compiler/Memory.asm", "r")
 memory = ["0000000000000000"] * 2 ** 12
 code = []
 
@@ -130,7 +130,7 @@ for line in file:
         memory[address] = "{0:016b}".format(int(instructions[i + 1], 16))
         address += 1
 
-outputFile = open(os.getcwd() + "/TwoOperandMemeory.mem", "w")
+outputFile = open(os.getcwd() + "/Compiler/Memory.mem", "w")
 
 outputFile.write(
     "// memory data file (do not edit the following line - required for mem load use)\n"

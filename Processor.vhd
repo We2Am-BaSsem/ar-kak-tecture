@@ -19,37 +19,54 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
 
     SIGNAL pc_reg_out_sig : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL adder_output_sig : STD_LOGIC_VECTOR(31 DOWNTO 0);
+
+    SIGNAL new_instruction_address : STD_LOGIC_VECTOR(31 DOWNTO 0);
+
     SIGNAL cout_sig : STD_LOGIC;
     SIGNAL temp_zero : STD_LOGIC := '0';
 
     SIGNAL fetched_instruction_buffer_input_fetchstage : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL fetched_instruction_buffer_output_fetchstage : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL fetched_instruction_buffer_output_decodestage : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    
+    
+    SIGNAL ALU_exceptionaddress_sig : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL Stack_exceptionaddress_sig : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    
+    SIGNAL INT0_address_sig : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL INT1_address_sig : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+
+
     ------------------------------------------------------------------------
-    SIGNAL memRead_s,
-    memToReg_s,
-    memWrite_s,
+    SIGNAL
     regWrite_s,
-    pop_s,
-    push_s,
-    fnJmp_s,
+    -- memRead_s,
+    -- memToReg_s,
+    -- memWrite_s,
+    -- pop_s,
+    -- push_s,
+    -- fnJmp_s,
     flushDecode_s,
     flushExecute_s : STD_LOGIC; --outputs of control_unit 
     --todo: integrate with execution
     SIGNAL memEx_s : STD_LOGIC := '0';
     SIGNAL writeAddress_s : STD_LOGIC_VECTOR(2 DOWNTO 0);
     ---------------------------------------------------------------------------
-    SIGNAL readData1_s,
-    readData2_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    -- SIGNAL readData1_s,
+    -- readData2_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
     --outputs od register file  --todo: integrate with execution
     ---------------------------------------------------------------------------
     SIGNAL DecExBufferInput, DecExBufferOutput : STD_LOGIC_VECTOR(127 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL ALUOut_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    -- SIGNAL ALUOut_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
     SIGNAL EnableOutPort_s : STD_LOGIC := '0';
     SIGNAL InPortSignal_s : STD_LOGIC := '0';
+    SIGNAL enZandN_s : STD_LOGIC := '0';
+    SIGNAL enC_s : STD_LOGIC := '0';
+    SIGNAL flags_in_s : STD_LOGIC_VECTOR(2 downto 0);
+    SIGNAL flags_out_s : STD_LOGIC_VECTOR(2 downto 0);
     SIGNAL opCode_s : STD_LOGIC_VECTOR(4 DOWNTO 0);
-    SIGNAL d1_s, d2_s: STD_LOGIC_VECTOR(15 DOWNTO 0);
-    SIGNAL MemData_s: STD_LOGIC_VECTOR(15 DOWNTO 0);
+    SIGNAL d1_s, d2_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    SIGNAL MemData_s : STD_LOGIC_VECTOR(15 DOWNTO 0);
     ---------------------------------------------------------------------------
     SIGNAL ExMemBufferInput, ExMemBufferOutput : STD_LOGIC_VECTOR(127 DOWNTO 0) := (OTHERS => '0');
     SIGNAL stackOut_s : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
@@ -63,9 +80,13 @@ BEGIN
         PORT MAP(
             clk => clk,
             rst => rst,
-            adder_output => adder_output_sig,
+            adder_output => new_instruction_address,
             instruction_out => fetched_instruction_buffer_input_fetchstage, -- this is the fetched instruction
-            pc_reg_out => pc_reg_out_sig
+            pc_reg_out => pc_reg_out_sig,        
+            ALU_exceptionaddress =>ALU_exceptionaddress_sig,
+            Stack_exceptionaddress=>Stack_exceptionaddress_sig,
+            INT0_address=>INT0_address_sig,
+            INT1_address=>INT1_address_sig
         );
     pcAdder : ENTITY work.PCNadder(PCarch_Nadder)
         PORT MAP(
@@ -75,6 +96,14 @@ BEGIN
             s => adder_output_sig,
             cout => cout_sig
         );
+        new_instruction_address <= adder_output_sig ;--when  stackexceptin='0' and pcchanged='0' else
+            -- branch_output when  stackexceptin='0' and pcchanged='1' else
+            -- Stack_exceptionaddress_sig when  stackexceptin='1' and pcchanged='0' else
+            -- branch_output ;
+
+
+
+
     fetched_instruction_buffer_fetchstage : ENTITY work.pipeline_buffer(pipeline_buffer)
         GENERIC MAP(n => 32)
         PORT MAP(
@@ -96,6 +125,7 @@ BEGIN
             memWrite => DecExBufferInput(66),
             regWrite => DecExBufferInput(70),
             pop => DecExBufferInput(64),
+            push => DecExBufferInput(63),
             fnJmp => DecExBufferInput(62),
             flushDecode => flushDecode_s,
             flushExecute => flushExecute_s,
@@ -159,9 +189,6 @@ BEGIN
             en => EnableOutPort_s
         );
     ----------------------------------------------------------------
-    -- todo add push signal from Control Unit
-    DecExBufferInput(63) <= '0';
-    ----------------------------------------------------------------
     DecExBufferInput(56 DOWNTO 48) <= fetched_instruction_buffer_output_fetchstage(26 DOWNTO 18);
     DecExBufferInput(61 DOWNTO 57) <= opCode_s;
     DecExBufferInput(15 DOWNTO 0) <= fetched_instruction_buffer_output_fetchstage(15 DOWNTO 0);
@@ -169,7 +196,8 @@ BEGIN
     DecExBufferInput(74) <= InPortSignal_s;
 
     MemData_s <= MemWBBufferOutput(15 DOWNTO 0) WHEN MemWBBufferOutput(32) = '1'
-            ELSE MemWBBufferOutput(31 DOWNTO 16);
+        ELSE
+        MemWBBufferOutput(31 DOWNTO 16);
 
     DecExBuffer : ENTITY work.pipeline_buffer(pipeline_buffer)
         PORT MAP(
@@ -185,39 +213,52 @@ BEGIN
             ReadData => DecExBufferOutput(47 DOWNTO 32),
             MemRdst => MemWBBufferOutput(38 DOWNTO 36),
             MemData => MemData_s,
-            ExRdst  => ExMemBufferOutput(75 DOWNTO 73),
-            ExData  => ExMemBufferOutput(63 DOWNTO 48),
+            ExRdst => ExMemBufferOutput(75 DOWNTO 73),
+            ExData => ExMemBufferOutput(63 DOWNTO 48),
             Data => d1_s,
             InpPortSignal => DecExBufferInput(74)
         );
-        DataForward2 : ENTITY work.DataForward(DataForward)
+    DataForward2 : ENTITY work.DataForward(DataForward)
         PORT MAP(
             Rsrc => DecExBufferOutput(50 DOWNTO 48),
             ReadData => DecExBufferOutput(31 DOWNTO 16),
             MemRdst => MemWBBufferOutput(38 DOWNTO 36),
             MemData => MemData_s,
-            ExRdst  => ExMemBufferOutput(75 DOWNTO 73),
-            ExData  => ExMemBufferOutput(63 DOWNTO 48),
+            ExRdst => ExMemBufferOutput(75 DOWNTO 73),
+            ExData => ExMemBufferOutput(63 DOWNTO 48),
             Data => d2_s,
             InpPortSignal => DecExBufferInput(74)
         );
     ALU : ENTITY work.ALU(ALU)
         PORT MAP(
-            oldN => '0',
-            oldZ => '0',
             opCode => DecExBufferOutput(61 DOWNTO 57),
             d1 => d1_s,
             d2 => d2_s,
             imm => DecExBufferOutput(15 DOWNTO 0),
             ALUOut => ExMemBufferInput(63 DOWNTO 48),
-            EnableOutPort => EnableOutPort_s
+            EnableOutPort => EnableOutPort_s,
+            en => enZandN_s,
+            enc => enC_s,
+            newZ => flags_in_s(0),
+            newN => flags_in_s(1),
+            cout => flags_in_s(2)
         );
+    FlagsRegister : ENTITY work.FlagsRegister(rtl)
+        PORT MAP(
+            clk => clk,
+            rst => rst,
+            enNZ => enZandN_s,
+            enC => enC_s,
+            flags_in => flags_in_s,
+            flags_out => flags_out_s
+        );
+    
 
     -----------------------------------Memory--------------------------------
     ExMemBufferInput(71 DOWNTO 64) <= DecExBufferOutput(69) & DecExBufferOutput(68) & DecExBufferOutput(67) & DecExBufferOutput(66) & DecExBufferOutput(65)
     & DecExBufferOutput(64) & DecExBufferOutput(63) & DecExBufferOutput(62);
 
-    ExMemBufferInput(47 DOWNTO 0) <= DecExBufferOutput(47 DOWNTO 32) & fetched_instruction_buffer_output_decodestage;
+    ExMemBufferInput(47 DOWNTO 0) <= d1_s & fetched_instruction_buffer_output_decodestage;
     ExMemBufferInput(75 DOWNTO 72) <= DecExBufferOutput(73 DOWNTO 70);
     ExMemBuffer : ENTITY work.pipeline_buffer(pipeline_buffer)
         PORT MAP(

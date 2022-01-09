@@ -22,6 +22,7 @@ ARCHITECTURE Memory_Stage OF Memory_Stage IS
         PORT (
             D : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
             Q : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+            EmptyStackExceptionSignal : INOUT STD_LOGIC := '0';
             clk, en : IN STD_LOGIC
         );
     END COMPONENT;
@@ -42,23 +43,27 @@ ARCHITECTURE Memory_Stage OF Memory_Stage IS
     SIGNAL en : STD_LOGIC := '0';
 BEGIN
     en <= pushpsignal OR popsignal;
-    EmptyStackExceptionSignal <= '1' WHEN popsignal = '1' AND ((SP + 1 >= 2 ** 20) OR (controlsignal = '1' AND SP + 2 >= 2 ** 20))
+    -- EmptyStackExceptionSignal <= '1' WHEN popsignal = '1' AND ((controlsignal = '0' AND SP + 1 > STD_LOGIC_VECTOR'(x"000FFFFF")) OR (controlsignal = '1' AND SP + 2 > STD_LOGIC_VECTOR'(x"000FFFFF")))
+    --     ELSE
+    --     '0';
+
+    DataMemory : Memory PORT MAP(
+        clk => clk,
+        we => we, re => re, pushpsignal => pushpsignal, popsignal => popsignal, controlsignal => controlsignal,
+        address => address, datain => datain, pc => pc, SP => SP,
+        EmptyStackExceptionSignal => EmptyStackExceptionSignal,
+        stackout => stackout, dataout => dataout
+    );
+
+    newSP <= SP + 2 WHEN popsignal = '1' AND controlsignal = '1'
         ELSE
-        '0';
-    newSP <= SP + 2 WHEN SP + 2 <= 2 ** 20 - 1 AND popsignal = '1' AND controlsignal = '1'
-        ELSE
-        SP + 1 WHEN SP + 1 <= 2 ** 20 - 1 AND popsignal = '1' AND controlsignal = '0'
+        SP + 1 WHEN popsignal = '1' AND controlsignal = '0'
         ELSE
         SP - 2 WHEN pushpsignal = '1' AND controlsignal = '1'
         ELSE
         SP - 1 WHEN pushpsignal = '1' AND controlsignal = '0';
-
-    SP_Register : my_register PORT MAP(D => newSP, Q => SP, clk => clk, en => en);
-    DataMemory : Memory PORT MAP(
-        clk => clk,
-        we => we, re => re, pushpsignal => pushpsignal, popsignal => popsignal, controlsignal => controlsignal,
-        address => address, datain => datain, pc => pc, SP => newSP,
+    SP_Register : my_register PORT MAP(
+        D => newSP, Q => SP,
         EmptyStackExceptionSignal => EmptyStackExceptionSignal,
-        stackout => stackout, dataout => dataout
-    );
+        clk => clk, en => en);
 END Memory_Stage;
