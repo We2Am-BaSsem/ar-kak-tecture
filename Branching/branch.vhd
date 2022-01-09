@@ -19,7 +19,7 @@ ENTITY branching IS
     carryflag, negativeflag, zeroflag : IN STD_LOGIC:= '0';
     opCode                 : IN STD_LOGIC_VECTOR(4 DOWNTO 0):= (OTHERS => '0');
 
-    alu_ex, POP, FnJMP                : IN STD_LOGIC:= '0';
+    alu_ex, POP, FnJMP,clk                : IN STD_LOGIC:= '0';
 
     nextPC                            : OUT STD_LOGIC_VECTOR(31 DOWNTO 0):= (OTHERS => '0');
     pc_changed                        : OUT STD_LOGIC:= '0' --input to mux at PC
@@ -33,8 +33,10 @@ SIGNAL pc_changed_temp                  : STD_LOGIC:= '0';
 SIGNAL first_mux, second_mux, third_mux : STD_LOGIC_VECTOR(31 DOWNTO 0):= (OTHERS => '0');
 
 BEGIN
-    process(opCode,zeroflag,negativeflag,carryflag, RRdst, PCregOutput)
+    process(opCode, RRdst,clk,zeroflag,negativeflag,POP,FnJMP,alu_ex,branchTaken)
+    --process(opCode,zeroflag,negativeflag,carryflag, RRdst, PCregOutput)
     begin
+      
         IF (opCode = "11000") AND (zeroflag = '1') THEN
             branchTaken <= '1';
         ELSIF (opCode = "11001") AND (negativeflag = '1') THEN
@@ -47,32 +49,34 @@ BEGIN
             branchTaken <= '0';
         end if;
 
-        IF (branchTaken = '1') THEN
-            first_mux <= (31 downto 16 => RRdst(15)) & RRdst;
-        ELSE
-            first_mux <= PCregOutput;
-        end if;
+        -- if (opCode(4 downto 3)= "11")then 
 
-        --here should be the code of secondmux
-        IF (alu_ex = '1') THEN
-            second_mux <= alu_ex_address;
-        ELSE
-            second_mux <= first_mux;
-        end if; 
+            if (POP = '1')AND ( FnJMP = '1') then 
+                nextPC<= XofSP;
+                pc_changed<='1';
+            elsif (alu_ex='1')then
+                nextPC<=alu_ex_address;
+                pc_changed<='1';
+            elsif (branchTaken='1') then
+                nextPC<=(31 downto 16 => RRdst(15)) & RRdst;
+                pc_changed<='1';
+            else 
+                nextPC<=PCregOutput;
+                pc_changed<='0';
+            end if;
 
-        IF (POP = '1')AND ( FnJMP = '1') THEN
-            third_mux <= XofSP;
-        ELSE
-            third_mux <= second_mux;
-        end if;
 
-        if (third_mux /= PCregOutput) then pc_changed_temp <= '1';
-        else 
-        pc_changed_temp<='0';
-        end if ;
+
+
+        -- else  
+        -- pc_changed_temp<='0';
+        -- nextPC<=PCregOutput;
+        -- end if;
+
+
+            
         end process;
-        
-    nextPC <= third_mux;
-    pc_changed <= branchTaken;
+        --pc_changed<=pc_changed_temp;
+ 
 
 END ARCHITECTURE;
