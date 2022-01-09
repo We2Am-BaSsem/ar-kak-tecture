@@ -79,7 +79,6 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
     signal flush_ID_EX  : std_logic := '0';
     signal flush_EX_MEM : std_logic := '0';
 
-    signal flush_before_ALU : std_logic := '0';
     -- signal flush_MEM_WB: std_logic := 0; not needed
 BEGIN
     -----------------------------------Fetch unit--------------------------------
