@@ -281,6 +281,7 @@ BEGIN
         XofSP             => (OTHERS => '0'),
         POP               => '0',
         FnJMP             => '0',
+        clk               =>  clk,
         nextPC            => nextPC_sig,
         pc_changed        => pcchanged_sig
 
