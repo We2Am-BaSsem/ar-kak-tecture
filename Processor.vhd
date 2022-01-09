@@ -282,7 +282,8 @@ BEGIN
             alu_ex => aluEx_s,
             XofSP => (OTHERS => '0'),
             POP => '0',
-            FnJMP => '0',
+            PUSH => DecExBufferInput(63),
+            FnJMP => DecExBufferInput(62),
             clk => clk,
             nextPC => nextPC_sig,
             pc_changed => pcchanged_sig
