@@ -48,15 +48,6 @@ BEGIN
         END IF;
 
         -- if (opCode(4 downto 3)= "11")then 
-
-        IF (POP = '1') AND (FnJMP = '1') THEN
-            nextPC <= XofSP;
-            pc_changed <= '1';
-        ELSIF (opCode = "11100")  THEN
-            nextPC <= "0000000000000000" & RRdst;
-            pc_changed <= '1';
-        ELSIF (opCode = "11110")  THEN
-            --nextPC <= XofSP;
         IF (mem_ex = '1') THEN
             nextPC <= mem_ex_address;
             pc_changed <= '1';
