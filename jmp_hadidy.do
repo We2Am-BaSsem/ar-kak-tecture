@@ -53,6 +53,7 @@ add wave -position insertpoint sim:/processor/WriteBack/*
 add wave -position insertpoint sim:/processor/BranchALUStage/*
 
 
+add wave -position insertpoint sim:/processor/FlagsRegister/*
 
 
 
@@ -67,7 +68,7 @@ force -freeze sim:/processor/InPort 16#0300 450
 
 
 
-mem load -i {/home/mohamed/Desktop/repos/ar-kak-tecture/Branch_copy.mem} /processor/fetch_unit/instructionmemory/InstructionMemory
+mem load -i {/home/mohamed/Desktop/repos/ar-kak-tecture/Branch_copy_2.mem} /processor/fetch_unit/instructionmemory/InstructionMemory
 
 
 force -freeze sim:/processor/rst 1 0
