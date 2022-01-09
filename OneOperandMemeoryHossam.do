@@ -26,17 +26,6 @@ sim:/processor/WriteBackData_s  \
 sim:/processor/DecExBufferInput \
 sim:/processor/DecExBufferOutput
 
-add wave -position insertpoint sim:/processor/fetch_unit/*
-add wave -position insertpoint sim:/processor/pcAdder/*
-add wave -position insertpoint sim:/processor/control_unit/*
-add wave -position insertpoint sim:/processor/register_file/*
-add wave -position insertpoint sim:/processor/ALU/*
-add wave -position insertpoint sim:/processor/Memory/*
-add wave -position insertpoint sim:/processor/WriteBack/*
-
-
-
-
 
 
 add wave -position insertpoint sim:/processor/fetch_unit/*
@@ -44,9 +33,13 @@ add wave -position insertpoint sim:/processor/pcAdder/*
 add wave -position insertpoint sim:/processor/control_unit/*
 add wave -position insertpoint sim:/processor/register_file/*
 add wave -position insertpoint sim:/processor/ALU/*
+add wave -position insertpoint sim:/processor/DataForward1/*
+add wave -position insertpoint sim:/processor/DataForward2/*
 add wave -position insertpoint sim:/processor/Memory/*
 add wave -position insertpoint sim:/processor/WriteBack/*
 add wave -position insertpoint sim:/processor/BranchALUStage/*
+add wave -position insertpoint sim:/processor/FlagsRegister/*
+
 
 
 
@@ -55,10 +48,11 @@ add wave -position insertpoint sim:/processor/BranchALUStage/*
 
 
 force -freeze sim:/processor/clk 0 0, 1 {50 ps} -r 100
-force -freeze sim:/processor/InPort 16#F76A 0
+force -freeze sim:/processor/InPort 16#0005 550
+force -freeze sim:/processor/InPort 16#0010 650
 
 
-mem load -i /home/mohamed/Desktop/repos/ar-kak-tecture/OneOperand.mem /processor/fetch_unit/instructionmemory/InstructionMemory
+mem load -i {D:/3A/CA/project/ar-kak-tecture/OneOperand.mem} /processor/fetch_unit/instructionmemory/InstructionMemory
 
 
 force -freeze sim:/processor/rst 1 0

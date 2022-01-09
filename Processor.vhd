@@ -24,10 +24,10 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
 
     SIGNAL cout_sig : STD_LOGIC;
     SIGNAL temp_zero : STD_LOGIC := '0';
-
+    
     SIGNAL fetched_instruction_buffer_input_fetchstage : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL fetched_instruction_buffer_output_fetchstage : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL fetched_instruction_buffer_output_decodestage : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL fetched_instruction_buffer_output_fetchstage : STD_LOGIC_VECTOR(63 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL fetched_instruction_buffer_output_decodestage : STD_LOGIC_VECTOR(63 DOWNTO 0) := (OTHERS => '0');
     
     
     SIGNAL ALU_exceptionaddress_sig : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
@@ -35,6 +35,11 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
     
     SIGNAL INT0_address_sig : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL INT1_address_sig : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    
+    
+    SIGNAL fetch_decode_buffer_input : STD_LOGIC_VECTOR(63 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL nextPC_sig : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL pcchanged_sig : STD_LOGIC;
 
 
     ------------------------------------------------------------------------
@@ -96,18 +101,25 @@ BEGIN
             s => adder_output_sig,
             cout => cout_sig
         );
-        new_instruction_address <= adder_output_sig ;--when  stackexceptin='0' and pcchanged='0' else
+
+        new_instruction_address <= adder_output_sig when pcchanged_sig='0' else 
+        nextPC_sig;
+        --new_instruction_address <= adder_output_sig ;--when  stackexceptin='0' and pcchanged='0' else
             -- branch_output when  stackexceptin='0' and pcchanged='1' else
             -- Stack_exceptionaddress_sig when  stackexceptin='1' and pcchanged='0' else
             -- branch_output ;
 
 
 
+    fetch_decode_buffer_input<=adder_output_sig & fetched_instruction_buffer_input_fetchstage;
 
+    --fetch decode stage
     fetched_instruction_buffer_fetchstage : ENTITY work.pipeline_buffer(pipeline_buffer)
-        GENERIC MAP(n => 32)
+    -- 63 down to 32 is the new instruction address
+        -- 31 down to 0   is the currently fetched instduction
+        GENERIC MAP(n => 64)
         PORT MAP(
-            D => fetched_instruction_buffer_input_fetchstage,
+            D => fetch_decode_buffer_input,
             Q => fetched_instruction_buffer_output_fetchstage,
             clk => clk,
             rst => rst,
@@ -154,11 +166,13 @@ BEGIN
         );
 
     --fetched instruction buffer for this stage
+    --decode execute stage
     fetched_instruction_buffer_decodestage : ENTITY work.pipeline_buffer(pipeline_buffer)
         GENERIC MAP(
-            n => 32
+            n => 64
         )
-
+        -- 63 down to 32 is the new instruction address
+        -- 31 down to 0   is the currently fetched instduction
         PORT MAP(
             D => fetched_instruction_buffer_output_fetchstage,
             Q => fetched_instruction_buffer_output_decodestage,
@@ -216,7 +230,7 @@ BEGIN
             ExRdst => ExMemBufferOutput(75 DOWNTO 73),
             ExData => ExMemBufferOutput(63 DOWNTO 48),
             Data => d1_s,
-            InpPortSignal => DecExBufferInput(74)
+            InpPortSignal => DecExBufferOutput(74)
         );
     DataForward2 : ENTITY work.DataForward(DataForward)
         PORT MAP(
@@ -227,7 +241,7 @@ BEGIN
             ExRdst => ExMemBufferOutput(75 DOWNTO 73),
             ExData => ExMemBufferOutput(63 DOWNTO 48),
             Data => d2_s,
-            InpPortSignal => DecExBufferInput(74)
+            InpPortSignal => DecExBufferOutput(74)
         );
     ALU : ENTITY work.ALU(ALU)
         PORT MAP(
@@ -252,6 +266,26 @@ BEGIN
             flags_in => flags_in_s,
             flags_out => flags_out_s
         );
+
+    BranchALUStage : Entity work.branching(branching_architecture)
+    port map(
+
+        alu_ex_address    => ALU_exceptionaddress_sig,
+        PCregOutput       => fetched_instruction_buffer_output_decodestage(63 downto 32) ,
+        RRdst             => d1_s,
+        carryflag         => flags_out_s(2),
+        negativeflag      => flags_out_s(1),
+        zeroflag          => flags_out_s(0),
+        opCode => fetched_instruction_buffer_output_decodestage(31 downto 27) ,
+        alu_ex            => '0',
+        XofSP             => (OTHERS => '0'),
+        POP               => '0',
+        FnJMP             => '0',
+        clk               =>  clk,
+        nextPC            => nextPC_sig,
+        pc_changed        => pcchanged_sig
+
+    );
     
 
     -----------------------------------Memory--------------------------------

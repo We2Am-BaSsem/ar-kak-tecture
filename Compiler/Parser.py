@@ -131,7 +131,7 @@ for line in file:
         memory[address] = "{0:016b}".format(int(instructions[i + 1], 16))
         address += 1
 
-outputFile = open(os.getcwd() + "/Compiler/Memory.mem", "w")
+outputFile = open(os.getcwd() + "/Compiler/OneOperand.mem", "w")
 
 outputFile.write(
     "// memory data file (do not edit the following line - required for mem load use)\n"
