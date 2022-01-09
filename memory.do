@@ -47,7 +47,8 @@ force -freeze sim:/processor/InPort 16#0010 450
 
 
 
-mem load -i {D:/GitHub/ar-kak-tecture/Memory files/Memory.mem} /processor/fetch_unit/instructionmemory/InstructionMemory
+set memory [file join [pwd] {Memory files/Memory.mem}]
+mem load -i $memory /processor/fetch_unit/instructionmemory/InstructionMemory
 
 
 force -freeze sim:/processor/rst 1 0

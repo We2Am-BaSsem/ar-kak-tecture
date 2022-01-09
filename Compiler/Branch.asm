@@ -18,14 +18,14 @@
 250
 
 .ORG 200 #this is int 0
-AND R0,R0    #N=0,Z=1
+AND R0,R0,R0    #N=0,Z=1
 OUT R6
 RTI          #POP PC and flags restored
 
 .ORG 250 #this is int 2
 SETC
-OUT R0,R0    #N=0,Z=1
-out R2
+AND R0,R0,R0    #N=0,Z=1
+OUT R2
 RTI          #POP PC and flags restored
 
 .ORG 10
@@ -40,7 +40,7 @@ INC R1	  # this statement shouldn't be executed
  
 #check flag fowarding  
 .ORG 30
-AND R1,R5   #R5=0 , Z = 1
+AND R5,R1,R5   #R5=0 , Z = 1
 JZ  R2      #Jump taken, Z = 0
 SETC        # this statement shouldn't be executed, C-->1
 
@@ -52,13 +52,13 @@ JC R3      #Jump Not taken
 #check destination forwarding
 NOT R5     #R5=FFFF, Z= 0, C--> not change, N=1
 INT 0      #SP=FFFFFFFC, M[FFFFFFFD]=half next PC,M[FFFFFFFE]=other half next PC
-IN  R6     #R6=200, flag no change
+IN  R6     #R6=700, flag no change
 JN  R6     #jump taken, N = 0
 INC R1     # this statement shouldn't be executed
 
 
 #check on load use
-.ORG 200
+.ORG 700
 SETC      #C-->1
 POP R6     #R6=300, SP=FFFFFFFF
 Call R6    #SP=FFFFFFFD, M[FFFFFFFE]=half next PC,M[FFFFFFFF]=other half next PC
@@ -68,10 +68,10 @@ NOP
 
 
 .ORG 300
-Add R3,R6 #R6=400
-Add R1,R2 #R1=80, C->0,N=0, Z=0
-ret
-SetC           #this shouldnot be executed
+ADD R6,R3,R6 #R6=400
+ADD R1,R1,R2 #R1=80, C->0,N=0, Z=0
+RET
+SETC           #this shouldnot be executed
 
 .ORG 500
 NOP

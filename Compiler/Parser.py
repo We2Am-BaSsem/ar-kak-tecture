@@ -62,7 +62,7 @@ interupt1 = 257
 interupt2 = 513
 
 file = open(os.getcwd() + "/Compiler/Memory.asm", "r")
-memory = ["0000000000000000"] * 2 ** 12
+memory = ["0000000000000000"] * 2 ** 20
 code = []
 
 
@@ -73,6 +73,7 @@ def memoryInserion(address, index):
 
 address = 0
 for line in file:
+    print(line)
     if line[0] == "#" or line == "\n":
         continue
     if "#" in line:

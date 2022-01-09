@@ -12,19 +12,10 @@ sim:/processor/temp_zero \
 sim:/processor/fetched_instruction_buffer_input_fetchstage \
 sim:/processor/fetched_instruction_buffer_output_fetchstage \
 sim:/processor/fetched_instruction_buffer_output_decodestage \
-sim:/processor/memRead_s \
-sim:/processor/memToReg_s \
-sim:/processor/memWrite_s \
 sim:/processor/regWrite_s \
-sim:/processor/pop_s \
-sim:/processor/push_s \
-sim:/processor/fnJmp_s \
 sim:/processor/flushDecode_s \
 sim:/processor/flushExecute_s \
 sim:/processor/memEx_s \
-sim:/processor/readData1_s \
-sim:/processor/readData2_s \
-sim:/processor/ALUOut_s \
 sim:/processor/ExMemBufferInput \
 sim:/processor/ExMemBufferOutput \
 sim:/processor/stackOut_s \
@@ -57,8 +48,8 @@ force -freeze sim:/processor/InPort 16#F320 450
 
 
 
-mem load -i {D:/GitHub/ar-kak-tecture/Memory files/TwoOperand.mem} /processor/fetch_unit/instructionmemory/InstructionMemory
-mem load -i {D:/GitHub/ar-kak-tecture/Memory files/OneOperand.mem} /processor/Memory/DataMemory/ram
+set memory [file join [pwd] {Memory files/TwoOperand.mem}]
+mem load -i $memory /processor/fetch_unit/instructionmemory/InstructionMemory
 
 
 force -freeze sim:/processor/rst 1 0
