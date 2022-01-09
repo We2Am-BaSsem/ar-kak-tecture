@@ -30,6 +30,9 @@ add wave -position insertpoint sim:/processor/fetch_unit/*
 add wave -position insertpoint sim:/processor/pcAdder/*
 add wave -position insertpoint sim:/processor/control_unit/*
 add wave -position insertpoint sim:/processor/register_file/*
+add wave -position insertpoint sim:/processor/FlagsRegister/*
+add wave -position insertpoint sim:/processor/DataForward1/*
+add wave -position insertpoint sim:/processor/DataForward2/*
 add wave -position insertpoint sim:/processor/ALU/*
 add wave -position insertpoint sim:/processor/Memory/*
 add wave -position insertpoint sim:/processor/WriteBack/*

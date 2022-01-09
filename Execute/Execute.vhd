@@ -16,7 +16,8 @@ ARCHITECTURE ALUControl OF ALUControl IS
 BEGIN
 
     IgnoreSignal <= '1' WHEN opCode = b"00000" OR opCode = b"00010" OR opCode = b"00101" OR opCode = b"00110" OR opCode(4 DOWNTO 3) = b"11" --todo: remove last check 00110
-        ELSE '0';
+        ELSE
+        '0';
 
     EnableOutPort <= '1' WHEN opCode = b"00101" ELSE
         '0';
@@ -105,10 +106,13 @@ END ENTITY ALUToFlags;
 ARCHITECTURE ALUToFlags OF ALUToFlags IS
 BEGIN
     newN <= ALUOut(15);
-    newZ <= '1' WHEN ALUOut = x"0000" 
-        ELSE '0';
-    en <= '1' WHEN (opCode(4 DOWNTO 3) = b"01" AND opCode(2 DOWNTO 0) /= b"010") OR opCode = b"00100" OR opCode = b"00011" ELSE '0';
-    enC <= '1' WHEN (opCode(4 DOWNTO 3) = b"01" AND opCode(2 DOWNTO 1) /= b"01") OR opCode = b"00100" OR opCode = b"00010" ELSE '0';
+    newZ <= '1' WHEN ALUOut = x"0000"
+        ELSE
+        '0';
+    en <= '1' WHEN (opCode(4 DOWNTO 3) = b"01" AND opCode(2 DOWNTO 0) /= b"010") OR opCode = b"00100" OR opCode = b"00011" ELSE
+        '0';
+    enC <= '1' WHEN (opCode(4 DOWNTO 3) = b"01" AND opCode(2 DOWNTO 1) /= b"01") OR opCode = b"00100" OR opCode = b"00010" ELSE
+        '0';
 END ALUToFlags;
 
 LIBRARY IEEE;
@@ -168,11 +172,10 @@ BEGIN
     ALUOut <= ALUOutSig WHEN IgnoreSignal_s = '0'
         ELSE
         (OTHERS => '0');
-    
-    --enc <= '1' WHEN opCode = b"00010" ELSE '0' WHEN IgnoreSignal_s = '1' ELSE enc_s;
-    cout <= '1' WHEN opCode = b"00010" ELSE cout_s;
-    
 
-    ALUExceptionSignal <= '1' WHEN ALUOutSig >= x"FF00" AND opCode(4 DOWNTO 1) = b"1000" ELSE
+    --enc <= '1' WHEN opCode = b"00010" ELSE '0' WHEN IgnoreSignal_s = '1' ELSE enc_s;
+    cout <= '1' WHEN opCode = b"00010" ELSE
+        cout_s;
+    ALUExceptionSignal <= '1' WHEN IgnoreSignal_s = '0' AND ALUOutSig >= x"FF00" AND opCode(4 DOWNTO 1) = b"1000" ELSE
         '0';
 END ALU;
