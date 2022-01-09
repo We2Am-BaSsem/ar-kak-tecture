@@ -24,7 +24,7 @@ END ENTITY InstructionMemory;
 
 ARCHITECTURE arch_InstructionMemory OF InstructionMemory IS
 
-	TYPE InstructionMemory_type IS ARRAY(0 TO 2 ** 12 - 1) OF STD_LOGIC_VECTOR(15 DOWNTO 0);
+	TYPE InstructionMemory_type IS ARRAY(0 TO 2 ** 20 - 1) OF STD_LOGIC_VECTOR(15 DOWNTO 0);
 	SIGNAL InstructionMemory : InstructionMemory_type := (OTHERS => (OTHERS => '0'));
 BEGIN
 	PROCESS (clk, rst) IS

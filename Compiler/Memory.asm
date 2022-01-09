@@ -31,21 +31,14 @@ IN R2        #R2=19 add 19 in R2
 IN R3        #R3=FFFF
 IN R4        #R4=F320
 LDM R1,5     #R1=5
-#NOP
-#NOP
 PUSH R1      #SP=FFFFFFFE,M[FFFFFFFF]=5
 PUSH R2      #SP=FFFFFFFD,M[FFFFFFFE]=19
-#NOP
 POP R1       #SP=FFFFFFFE,R1=19
 POP R2       #SP=FFFFFFFF,R2=5
-#NOP
 IN R5        #R5= 10, you should run this test case another time and load R5 with FD60
-#NOP
-#NOP
 STD R2,R5,200   #M[210]=5, Exception in the 2nd run
 STD R1,R5,201   #M[211]=19
 LDD R3,R5,201   #R3=19
 LDD R4,R5,200   #R4=5
 POP R3  #exception
-NOP
 ADD R1, R2, R3 #should not execute as their is an exception

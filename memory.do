@@ -30,6 +30,9 @@ add wave -position insertpoint sim:/processor/fetch_unit/*
 add wave -position insertpoint sim:/processor/pcAdder/*
 add wave -position insertpoint sim:/processor/control_unit/*
 add wave -position insertpoint sim:/processor/register_file/*
+add wave -position insertpoint sim:/processor/FlagsRegister/*
+add wave -position insertpoint sim:/processor/DataForward1/*
+add wave -position insertpoint sim:/processor/DataForward2/*
 add wave -position insertpoint sim:/processor/ALU/*
 add wave -position insertpoint sim:/processor/Memory/*
 add wave -position insertpoint sim:/processor/WriteBack/*
@@ -47,7 +50,8 @@ force -freeze sim:/processor/InPort 16#0010 450
 
 
 
-mem load -i {D:/GitHub/ar-kak-tecture/Memory files/Memory.mem} /processor/fetch_unit/instructionmemory/InstructionMemory
+set memory [file join [pwd] {Memory files/Memory.mem}]
+mem load -i $memory /processor/fetch_unit/instructionmemory/InstructionMemory
 
 
 force -freeze sim:/processor/rst 1 0
