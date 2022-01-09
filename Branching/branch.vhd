@@ -36,7 +36,7 @@ BEGIN
     process(opCode, RRdst,clk,zeroflag,negativeflag,POP,FnJMP,alu_ex,branchTaken,clk)
     --process(opCode,zeroflag,negativeflag,carryflag, RRdst, PCregOutput)
     begin
-        -- if(rising_edge(clk)) then
+        --if(rising_edge(clk)) then
       
         IF (opCode = "11000") AND (zeroflag = '1') THEN
             branchTaken <= '1';
@@ -75,7 +75,7 @@ BEGIN
         -- end if;
 
 
-            -- end if;
+        --    end if;
         end process;
         --pc_changed<=pc_changed_temp;
  

@@ -272,7 +272,7 @@ BEGIN
 
         alu_ex_address    => ALU_exceptionaddress_sig,
         PCregOutput       => fetched_instruction_buffer_output_decodestage(63 downto 32) ,
-        RRdst             => d1_s,
+        RRdst             => DecExBufferOutput(47 DOWNTO 32),
         carryflag         => flags_out_s(2),
         negativeflag      => flags_out_s(1),
         zeroflag          => flags_out_s(0),
