@@ -33,9 +33,10 @@ SIGNAL pc_changed_temp                  : STD_LOGIC:= '0';
 SIGNAL first_mux, second_mux, third_mux : STD_LOGIC_VECTOR(31 DOWNTO 0):= (OTHERS => '0');
 
 BEGIN
-    process(opCode, RRdst,clk,zeroflag,negativeflag,POP,FnJMP,alu_ex,branchTaken)
+    process(opCode, RRdst,clk,zeroflag,negativeflag,POP,FnJMP,alu_ex,branchTaken,clk)
     --process(opCode,zeroflag,negativeflag,carryflag, RRdst, PCregOutput)
     begin
+        -- if(rising_edge(clk)) then
       
         IF (opCode = "11000") AND (zeroflag = '1') THEN
             branchTaken <= '1';
@@ -58,7 +59,7 @@ BEGIN
                 nextPC<=alu_ex_address;
                 pc_changed<='1';
             elsif (branchTaken='1') then
-                nextPC<=(31 downto 16 => RRdst(15)) & RRdst;
+                nextPC<="0000000000000000" & RRdst;
                 pc_changed<='1';
             else 
                 nextPC<=PCregOutput;
@@ -74,7 +75,7 @@ BEGIN
         -- end if;
 
 
-            
+            -- end if;
         end process;
         --pc_changed<=pc_changed_temp;
  
