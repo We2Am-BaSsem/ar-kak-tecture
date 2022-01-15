@@ -49,7 +49,7 @@ operandMap = {
     "jn": ["r1"],
     "jc": ["r1"],
     "jmp": ["r1"],
-    "call": ["r0"],
+    "call": ["r1"],
     "ret": [],
     "int": ["i"],
     "rti": [],

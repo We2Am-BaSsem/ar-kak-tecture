@@ -48,7 +48,7 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
     flushDecode_s,
     flushExecute_s : STD_LOGIC; --outputs of control_unit 
     --todo: integrate with execution
-    SIGNAL memEx_s, aluAddress_s : STD_LOGIC := '0';
+    SIGNAL memEx_s, aluEx_s : STD_LOGIC := '0';
     SIGNAL writeAddress_s : STD_LOGIC_VECTOR(2 DOWNTO 0);
     ---------------------------------------------------------------------------
     -- SIGNAL readData1_s,
@@ -75,11 +75,10 @@ ARCHITECTURE arKAKtectureProcessor OF Processor IS
     SIGNAL WriteBackData_s : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
 
     --------------------------------buffer resets------------------------------------
-    signal flush_IF_ID  : std_logic := '0';
-    signal flush_ID_EX  : std_logic := '0';
-    signal flush_EX_MEM : std_logic := '0';
+    SIGNAL flush_IF_ID : STD_LOGIC := '0';
+    SIGNAL flush_ID_EX : STD_LOGIC := '0';
+    SIGNAL flush_EX_MEM : STD_LOGIC := '0';
 
-    signal flush_before_ALU : std_logic := '0';
     -- signal flush_MEM_WB: std_logic := 0; not needed
 BEGIN
     -----------------------------------Fetch unit--------------------------------
@@ -112,12 +111,8 @@ BEGIN
     -- branch_output ;
 
     fetch_decode_buffer_input <= adder_output_sig & fetched_instruction_buffer_input_fetchstage;
-
-
     --flush_IF_ID <= '1' when (rst = '1') or (pcchanged_sig = '1') or (memEx_s ='1') else '0';
-    flush_IF_ID <= rst or pcchanged_sig or memEx_s;
-
-
+    flush_IF_ID <= rst OR pcchanged_sig OR memEx_s;
     --fetch decode stage
     fetched_instruction_buffer_fetchstage : ENTITY work.pipeline_buffer(pipeline_buffer)
         -- 63 down to 32 is the new instruction address
@@ -135,7 +130,7 @@ BEGIN
     control_unit : ENTITY work.ControlUnit(dataflow)
         PORT MAP(
             instruction => fetched_instruction_buffer_output_fetchstage(31 DOWNTO 27),
-            aluEx => aluAddress_s,
+            aluEx => aluEx_s,
             memEx => memEx_s,
             memRead => DecExBufferInput(65),
             memToReg => DecExBufferInput(67),
@@ -169,10 +164,8 @@ BEGIN
             readData1 => DecExBufferInput(47 DOWNTO 32),
             readData2 => DecExBufferInput(31 DOWNTO 16)
         );
-
-
     --flush_ID_EX <= '1' when rst = '1' or pcchanged_sig = '1' or memEx_s ='1' else '0';
-    flush_ID_EX <= rst or pcchanged_sig or memEx_s ;
+    flush_ID_EX <= rst OR pcchanged_sig OR memEx_s;
 
     --fetched instruction buffer for this stage
     --decode execute stage
@@ -217,6 +210,8 @@ BEGIN
     DecExBufferInput(15 DOWNTO 0) <= fetched_instruction_buffer_output_fetchstage(15 DOWNTO 0);
     DecExBufferInput(73 DOWNTO 71) <= fetched_instruction_buffer_output_fetchstage(26 DOWNTO 24);
     DecExBufferInput(74) <= InPortSignal_s;
+    DecExBufferInput(106 DOWNTO 75) <= fetched_instruction_buffer_output_decodestage(63 DOWNTO 32);
+    DecExBufferInput(122 DOWNTO 107) <= fetched_instruction_buffer_output_decodestage(15 DOWNTO 0);
 
     MemData_s <= MemWBBufferOutput(15 DOWNTO 0) WHEN MemWBBufferOutput(32) = '1'
         ELSE
@@ -265,7 +260,7 @@ BEGIN
             newZ => flags_in_s(0),
             newN => flags_in_s(1),
             cout => flags_in_s(2),
-            ALUExceptionSignal => aluAddress_s
+            ALUExceptionSignal => aluEx_s
         );
     FlagsRegister : ENTITY work.FlagsRegister(rtl)
         PORT MAP(
@@ -277,33 +272,38 @@ BEGIN
             flags_out => flags_out_s
         );
 
-    BranchALUStage : Entity work.branching(branching_architecture)
-    port map(
-
-        alu_ex_address    => ALU_exceptionaddress_sig,
-        PCregOutput       => fetched_instruction_buffer_output_decodestage(63 downto 32) ,
-        RRdst             => d1_s,--DecExBufferOutput(47 DOWNTO 32),
-        carryflag         => flags_out_s(2),
-        negativeflag      => flags_out_s(1),
-        zeroflag          => flags_out_s(0),
-        opCode            => DecExBufferOutput(61 DOWNTO 57),--fetched_instruction_buffer_output_decodestage(31 downto 27) ,
-        alu_ex            => '0',
-        XofSP             => (OTHERS => '0'),
-        POP               => '0',
-        FnJMP             => '0',
-        clk               =>  clk,
-        nextPC            => nextPC_sig,
-        pc_changed        => pcchanged_sig
+    BranchALUStage : ENTITY work.branching(branching_architecture)
+        PORT MAP(
+            alu_ex_address => ALU_exceptionaddress_sig,
+            mem_ex_address => Stack_exceptionaddress_sig,
+            int0_address => INT0_address_sig,
+            int1_addrress => INT1_address_sig,
+            PCregOutput => fetched_instruction_buffer_output_decodestage(63 DOWNTO 32),
+            RRdst => d1_s, --DecExBufferOutput(47 DOWNTO 32),
+            carryflag => flags_out_s(2),
+            negativeflag => flags_out_s(1),
+            zeroflag => flags_out_s(0),
+            opCode => DecExBufferOutput(61 DOWNTO 57), --fetched_instruction_buffer_output_decodestage(31 downto 27) ,
+            alu_ex => aluEx_s,
+            mem_ex => memEx_s,
+            XofSP => (OTHERS => '0'),
+            POP => '0',
+            PUSH => DecExBufferInput(63),
+            FnJMP => DecExBufferInput(62),
+            clk => clk,
+            nextPC => nextPC_sig,
+            pc_changed => pcchanged_sig,
+            imm => DecExBufferOutput(15 DOWNTO 0)
         );
     -----------------------------------Memory--------------------------------
     ExMemBufferInput(71 DOWNTO 64) <= DecExBufferOutput(69) & DecExBufferOutput(68) & DecExBufferOutput(67) & DecExBufferOutput(66) & DecExBufferOutput(65)
     & DecExBufferOutput(64) & DecExBufferOutput(63) & DecExBufferOutput(62);
 
-    ExMemBufferInput(47 DOWNTO 0) <= d1_s & fetched_instruction_buffer_output_decodestage(31 DOWNTO 0);
+    ExMemBufferInput(47 DOWNTO 0) <= d1_s & DecExBufferOutput(106 DOWNTO 75);
     ExMemBufferInput(75 DOWNTO 72) <= DecExBufferOutput(73 DOWNTO 70);
 
     --flush_EX_MEM <= '1' when rst = '1' or memEx_s = '1' else '0';
-    flush_EX_MEM <= rst or memEx_s;
+    flush_EX_MEM <= rst OR memEx_s;
     ExMemBuffer : ENTITY work.pipeline_buffer(pipeline_buffer)
         PORT MAP(
             D => ExMemBufferInput,
