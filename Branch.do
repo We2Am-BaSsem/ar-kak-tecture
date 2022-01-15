@@ -37,6 +37,7 @@ add wave -position insertpoint sim:/processor/ALU/*
 add wave -position insertpoint sim:/processor/BranchALUStage/*
 add wave -position insertpoint sim:/processor/Memory/*
 add wave -position insertpoint sim:/processor/WriteBack/*
+add wave -position insertpoint sim:/processor/Memory/SP_Register/*
 
 
 
@@ -51,7 +52,7 @@ force -freeze sim:/processor/InPort 16#0300 450
 
 
 
-set memory [file join [pwd] {Memory files/originalBranch.mem}]
+set memory [file join [pwd] {Memory files/Branch_copy_2.mem}]
 mem load -i $memory /processor/fetch_unit/instructionmemory/InstructionMemory
 
 

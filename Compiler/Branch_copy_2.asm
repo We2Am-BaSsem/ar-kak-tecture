@@ -19,6 +19,7 @@
 
 .ORG 200 #this is int 0
 AND R0,R0,R0    #N=0,Z=1
+INC R5
 OUT R6
 RTI          #POP PC and flags restored
 
@@ -51,8 +52,8 @@ JC R3      #Jump Not taken
 
 #check destination forwarding
 NOT R5     #R5=FFFF, Z= 0, C--> not change, N=1  
-IN  R6     #R6=700, flag no change
-JN  R6     #jump taken, N = 0
+IN  R6     #R6=300, flag no change
+INT  0      #jump taken, N = 0
 INC R1     # this statement shouldn't be executed
 
 

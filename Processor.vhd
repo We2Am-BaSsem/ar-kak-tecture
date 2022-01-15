@@ -211,6 +211,8 @@ BEGIN
     DecExBufferInput(73 DOWNTO 71) <= fetched_instruction_buffer_output_fetchstage(26 DOWNTO 24);
     DecExBufferInput(74) <= InPortSignal_s;
     DecExBufferInput(106 DOWNTO 75) <= fetched_instruction_buffer_output_decodestage(63 DOWNTO 32);
+    DecExBufferInput(122 DOWNTO 107) <= fetched_instruction_buffer_output_decodestage(15 DOWNTO 0);
+
     MemData_s <= MemWBBufferOutput(15 DOWNTO 0) WHEN MemWBBufferOutput(32) = '1'
         ELSE
         MemWBBufferOutput(31 DOWNTO 16);
@@ -274,6 +276,8 @@ BEGIN
         PORT MAP(
             alu_ex_address => ALU_exceptionaddress_sig,
             mem_ex_address => Stack_exceptionaddress_sig,
+            int0_address => INT0_address_sig,
+            int1_addrress => INT1_address_sig,
             PCregOutput => fetched_instruction_buffer_output_decodestage(63 DOWNTO 32),
             RRdst => d1_s, --DecExBufferOutput(47 DOWNTO 32),
             carryflag => flags_out_s(2),
@@ -288,7 +292,8 @@ BEGIN
             FnJMP => DecExBufferInput(62),
             clk => clk,
             nextPC => nextPC_sig,
-            pc_changed => pcchanged_sig
+            pc_changed => pcchanged_sig,
+            imm => DecExBufferOutput(15 DOWNTO 0)
         );
     -----------------------------------Memory--------------------------------
     ExMemBufferInput(71 DOWNTO 64) <= DecExBufferOutput(69) & DecExBufferOutput(68) & DecExBufferOutput(67) & DecExBufferOutput(66) & DecExBufferOutput(65)

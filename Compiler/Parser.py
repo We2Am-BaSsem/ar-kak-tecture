@@ -49,7 +49,7 @@ operandMap = {
     "jn": ["r1"],
     "jc": ["r1"],
     "jmp": ["r1"],
-    "call": ["r0"],
+    "call": ["r1"],
     "ret": [],
     "int": ["i"],
     "rti": [],
@@ -61,7 +61,7 @@ memException = 129
 interupt1 = 257
 interupt2 = 513
 
-file = open(os.getcwd() + "/Compiler/Branch.asm", "r")
+file = open(os.getcwd() + "/Compiler/Branch_copy_2.asm", "r")
 memory = ["0000000000000000"] * 2 ** 20
 code = []
 
@@ -131,7 +131,7 @@ for line in file:
         memory[address] = "{0:016b}".format(int(instructions[i + 1], 16))
         address += 1
 
-outputFile = open(os.getcwd() + "/Compiler/Branch.mem", "w")
+outputFile = open(os.getcwd() + "/Compiler/Branch_copy_2.mem", "w")
 
 outputFile.write(
     "// memory data file (do not edit the following line - required for mem load use)\n"
