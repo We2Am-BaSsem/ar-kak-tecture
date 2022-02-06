@@ -88,7 +88,7 @@ BEGIN
 
         IF (instruction = "10001") THEN
             out_vector(3) <= '1';
-        ELSIF (instruction = "10000") then 
+        ELSIF (instruction = "10000") THEN
             out_vector(5) <= '1';
             out_vector(4) <= '1';
             out_vector(2) <= '1';

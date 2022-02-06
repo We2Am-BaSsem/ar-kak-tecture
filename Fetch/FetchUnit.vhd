@@ -15,10 +15,10 @@ ENTITY FetchUnit IS
 
         ALU_exceptionaddress : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         Stack_exceptionaddress : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        
+
         INT0_address : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         INT1_address : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0')
-        
+
         -- connect it to a in PCNadder
     );
 END ENTITY FetchUnit;
@@ -44,8 +44,8 @@ BEGIN
             beginning_address_of_operations => beginning_address_sig,
             ALU_EX_address => ALU_exceptionaddress,
             Stack_Exception_address => Stack_exceptionaddress,
-            int0_address =>INT0_address,
-            int1_address =>INT1_address
+            int0_address => INT0_address,
+            int1_address => INT1_address
         );
     pc_reg : ENTITY work.PC_register(arch_PC_register)
         PORT MAP(

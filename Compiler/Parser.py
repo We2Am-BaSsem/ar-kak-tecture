@@ -1,5 +1,5 @@
 import os
-file_name = 'Memory'
+file_name = 'OneOperand'
 
 opMap = {
     "nop": "00000",
@@ -62,7 +62,7 @@ memException = 129
 interupt1 = 257
 interupt2 = 513
 
-file = open(os.getcwd() + "/Compiler/" + file_name + ".asm", "r")
+file = open(os.getcwd() + "/Code Exampls/" + file_name + ".asm", "r")
 memory = ["0000000000000000"] * 2 ** 20
 code = []
 

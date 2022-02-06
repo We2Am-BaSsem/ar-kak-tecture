@@ -11,7 +11,7 @@ USE IEEE.std_logic_unsigned.ALL;
 ENTITY branching IS
 
     PORT (
-        alu_ex_address, mem_ex_address, PCregOutput, XofSP,int0_address,int1_addrress : IN STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+        alu_ex_address, mem_ex_address, PCregOutput, XofSP, int0_address, int1_addrress : IN STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         RRdst : IN STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
         carryflag, negativeflag, zeroflag : IN STD_LOGIC := '0';
         opCode : IN STD_LOGIC_VECTOR(4 DOWNTO 0) := (OTHERS => '0');
@@ -61,11 +61,11 @@ BEGIN
         ELSIF (branchTaken = '1') THEN
             nextPC <= "0000000000000000" & RRdst;
             pc_changed <= '1';
-        ELSIF (opcode="11110") and (imm ="0000000000000000") Then
-            nextPC<=int0_address;
+        ELSIF (opcode = "11110") AND (imm = "0000000000000000") THEN
+            nextPC <= int0_address;
             pc_changed <= '1';
-        ELSIF (opcode="11110") and (imm ="0000000000000001")Then
-            nextPC<=int1_addrress;
+        ELSIF (opcode = "11110") AND (imm = "0000000000000001") THEN
+            nextPC <= int1_addrress;
             pc_changed <= '1';
 
         ELSE

@@ -12,8 +12,8 @@ ENTITY RegisterFile IS
         regWrite : IN STD_LOGIC; --from control unit
         readData1 : OUT STD_LOGIC_VECTOR(15 DOWNTO 0); -- output to execute
         readData2 : OUT STD_LOGIC_VECTOR(15 DOWNTO 0); -- output to execute
-        InPortData: IN STD_LOGIC_VECTOR(15 DOWNTO 0);
-        InPortSignal: IN STD_LOGIC
+        InPortData : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+        InPortSignal : IN STD_LOGIC
     );
 END ENTITY RegisterFile;
 
@@ -40,7 +40,8 @@ BEGIN
 
     --reading is done regardless of anything
     readData1 <= array_reg(to_integer(unsigned(readAddr1))) WHEN InPortSignal = '0'
-                ELSE InPortData;
+        ELSE
+        InPortData;
     readData2 <= array_reg(to_integer(unsigned(readAddr2)));
 
 END ARCHITECTURE Behavioral;

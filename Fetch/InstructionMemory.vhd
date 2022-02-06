@@ -14,10 +14,10 @@ ENTITY InstructionMemory IS
 		beginning_address_of_operations : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
 		ALU_EX_address : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
 		Stack_Exception_address : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-		
+
 		int0_address : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
 		int1_address : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-		
+
 		dataout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0')
 	);
 END ENTITY InstructionMemory;
@@ -32,11 +32,9 @@ BEGIN
 		beginning_address_of_operations <= InstructionMemory(0) & InstructionMemory(1);
 		Stack_Exception_address <= InstructionMemory(2) & InstructionMemory(3);
 		ALU_EX_address <= InstructionMemory(4) & InstructionMemory(5);
-		
-		
 		int0_address <= InstructionMemory(6) & InstructionMemory(7);
 		int1_address <= InstructionMemory(8) & InstructionMemory(9);
-		
+
 		-- 2 , 3    ->  empty stack 
 		-- 4, 5      -> ALU exception
 

@@ -34,7 +34,7 @@ BEGIN
     PROCESS (clk, rst, en)
     BEGIN
         IF en = '1' THEN
-            IF rst = '1' and rising_edge(clk) THEN
+            IF rst = '1' AND rising_edge(clk) THEN
                 Q <= (OTHERS => '0');
             ELSIF rising_edge(clk) THEN
                 Q <= D;
