@@ -10,21 +10,26 @@ The processor has a RISC-like instruction set architecture, with 8 word-sized ge
 
 # Setup
 
-> ## clone this repository with
+### 1- Clone this repository with
 
 ```bash
 git clone https://github.com/We2Am-BaSsem/ar-kak-tecture.git
 ```
 
-> ## create new project with Modelsim in the same directory with ProjectName "ar-kak-tecture" to create the work folder and mpf file.
+### 2- Create new project with Modelsim in the same directory with ProjectName "ar-kak-tecture" to create the work folder and mpf file.
 
 ```bash
 ar-kak-tecture
 ```
 
-> ## Then add existing files to add vhd files to your local project
->
-> #### unfortunately, You need to do this countinousley when you pull from the remote repository
+### 3- Then add existing files to add vhd files to your local project
+unfortunately, You need to do this countinousley when you pull from the remote repository
+
+### 4- You can add your assembly code to "Code Exampls" directory and then replace the file_name variable in the Parser, python script, in "Compiler" Directory with your file name and run the script.
+
+### 5- The previous step will generate mem file conatins instruction memory of your code in the "Memory files".
+  
+
 
 # Design
 
