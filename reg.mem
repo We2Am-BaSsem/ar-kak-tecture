@@ -1,5 +1,0 @@
-// memory data file (do not edit the following line - required for mem load use)
-// instance=/processor/register_file/array_reg
-// format=mti addressradix=h dataradix=s version=1.0 wordsperline=4
-0: 0000000000001111 0000000000000000 0000000000000000 0000000000000000
-4: 0000000000000000 1111100000011111 1111000000000000 0000000000000000

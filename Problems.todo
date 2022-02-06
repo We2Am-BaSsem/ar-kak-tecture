@@ -1,5 +1,5 @@
 ✔ WBData propagate correctly to register file @done (1/9/2022, 12:32:16 AM)
 ✔ ALUOut start with 0001 @done (1/8/2022, 4:38:42 AM)
 ✔ Assert that Write Back Stage is shifted 2 cycles @done (1/9/2022, 12:32:21 AM)
-☐ Make Empty Stack Pointer 0 after it's raised from memory
+✔ Make Empty Stack Pointer 0 after it's raised from memory @done (2/6/2022, 9:46:48 AM)
 ☐ stop stack to write data at SP and SP -1
