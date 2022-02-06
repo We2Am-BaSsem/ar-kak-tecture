@@ -83,7 +83,24 @@ This a simple 5-stage pipelined processor implementation in VHDL, based on **Har
 
 ![Branching Unit Stage Schema](./docs/Branching.JPG)
 <br/>
-This a simple 5-stage pipelined processor implementation in VHDL, based on **Harvard architecture** (Program and data memories are separated). This also includes a simple parser (written in python) to convert assembly code into a binary memory file.
+Alongside exception handling, interrupts, and function calls, four main branching intsructions are implemented
+The branching unit takes as input slice [13:11] of the instruction, and serveral destinations from which one should be selected as the next program counter:
+the normal program counter progression
+the exception handler addresses
+the destination for jump intsructions
+the carry, negative, and zero flags
+
+A decoder followed by AND gates checks the type of jump instruction and the value of its corresponding flag,
+the output of this unit is a signal determining if a jump instruction is valid and should be executed next.
+This control signal is a selector to a multiplexer which is the first of 3 mltiplexers
+
+The output of the first mux selects one of two options, the normal program counter progression, or the destination specified by the the jump instruction
+the nature of this jump instruction has already been taken care of through the decoder explained previously
+
+The second mux has a a selector determining if an exception occured, and hence outputs either the exception handler address, or the output of the previous mux
+
+The third mux is responsible for function calls and interrupts, its selector checks if the instruction to be done is either a jump related to calls or interrupts, specifically a return or rti which jumps back after a function call or interrupt is finished.
+It then decides whether the next outupt is the output of the second mux, or the address of the instruction to be executed after a function or interrupt are done
 
 ### Memory & WriteBack Stages:
 
