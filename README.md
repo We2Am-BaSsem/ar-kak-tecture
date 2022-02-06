@@ -8,6 +8,24 @@ This a simple 5-stage pipelined processor implementation in VHDL, based on **Har
 
 The processor has a RISC-like instruction set architecture, with 8 word-sized general purpose registers: `R0 - R7` and some special purpose registers: `program counter (PC) And stack pointer (SP)` The initial value of SP is (2^20-1). The memory address space is 1 MB of 16-bit width and is word addressable. ( N.B. word = 2 bytes). The data bus is 32 bits.
 
+# Setup
+
+> ## clone this repository with
+
+```bash
+git clone https://github.com/We2Am-BaSsem/ar-kak-tecture.git
+```
+
+> ## create new project with Modelsim in the same directory with ProjectName "ar-kak-tecture" to create the work folder and mpf file.
+
+```bash
+ar-kak-tecture
+```
+
+> ## Then add existing files to add vhd files to your local project
+>
+> #### unfortunately, You need to do this countinousley when you pull from the remote repository
+
 # Design
 
 ![Schema](./docs/Schema2.png)
@@ -95,21 +113,3 @@ If both the push and pop signals are low then it is memory-register operation so
 In write back stage according to the MemtoReg signal it whether writes data from ALU output if the signal is low or writes data from memory if the signal is high.
 
 It also pass back the according regWrite signal and writeAddress of the instruction to the register file to avoid data hazard.
-
-# Setup
-
-> ## clone this repository with
-
-```bash
-git clone https://github.com/We2Am-BaSsem/ar-kak-tecture.git
-```
-
-> ## create new project with Modelsim in the same directory with ProjectName "ar-kak-tecture" to create the work folder and mpf file.
-
-```bash
-ar-kak-tecture
-```
-
-> ## Then add existing files to add vhd files to your local project
->
-> #### unfortunately, You need to do this countinousley when you pull from the remote repository
