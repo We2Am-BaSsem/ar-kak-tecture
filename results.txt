@@ -1,5 +1,0 @@
-integration 1 results:
-
-- there is a stall of 1 cycle after reset, the first instruction is fetched for 2 cycles.
-- adding 1 or 2 should be added in the fetch?
-- need to implement flushing for branching -> HOKSHA & ___hossam
