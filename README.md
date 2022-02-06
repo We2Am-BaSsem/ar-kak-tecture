@@ -27,24 +27,14 @@ ar-kak-tecture
 > #### unfortunately, You need to do this countinousley when you pull from the remote repository
 
 # Design
-
-![Schema](./docs/Schema2.png)
-<br/>
-
 The Table below shows supported operations, their operands and how they are fetched.
 ![Schema](./docs/Operations.JPG)
 <br/>
 
 ### Fetch Stage:
-
-![Fetch Stage Schema](./docs/Fetch.JPG)
-<br/>
 Fetch stage Start initializing the the exceptions, interrupts and code addresses from the instruction memory and store the address of the code in the PC register and keep adding 2 bytes on the PC register every clock cycle if the instruction does not require offset otherwise we add 4 bytes to skip the next 16 bits, used as offset.
 
 ### Decode Stage:
-
-![Decode Stage Schema](./docs/Decode.JPG)
-<br/>
 The decode stage consists of two main parts, the **register file** and the **control unit**.
 
 ##### Register file:
@@ -74,15 +64,10 @@ the control unit is responsible for firing several control signals according to 
 ### Excution Stage:
 
 ##### ALU:
-
-![Exectution Stage Schema](./docs/Execute.JPG)
-<br/>
 This a simple 5-stage pipelined processor implementation in VHDL, based on **Harvard architecture** (Program and data memories are separated). This also includes a simple parser (written in python) to convert assembly code into a binary memory file.
 
 ##### Branching:
 
-![Branching Unit Stage Schema](./docs/Branching.JPG)
-<br/>
 Alongside exception handling, interrupts, and function calls, four main branching intsructions are implemented
 The branching unit takes as input slice [13:11] of the instruction, and serveral destinations from which one should be selected as the next program counter:
 the normal program counter progression
@@ -103,9 +88,6 @@ The third mux is responsible for function calls and interrupts, its selector che
 It then decides whether the next outupt is the output of the second mux, or the address of the instruction to be executed after a function or interrupt are done
 
 ### Memory & WriteBack Stages:
-
-![Memory Stage Schema](./docs/Memory.JPG)
-<br/>
 
 ##### Memory:
 
@@ -130,3 +112,10 @@ If both the push and pop signals are low then it is memory-register operation so
 In write back stage according to the MemtoReg signal it whether writes data from ALU output if the signal is low or writes data from memory if the signal is high.
 
 It also pass back the according regWrite signal and writeAddress of the instruction to the register file to avoid data hazard.
+
+
+# Schema
+<img width="5451" alt="Frame 1" src="https://user-images.githubusercontent.com/58189568/152680380-f9a9166b-64c7-41a3-ab12-301c30ce328b.png">
+
+
+
