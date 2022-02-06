@@ -27,14 +27,17 @@ ar-kak-tecture
 > #### unfortunately, You need to do this countinousley when you pull from the remote repository
 
 # Design
+
 The Table below shows supported operations, their operands and how they are fetched.
 ![Schema](./docs/Operations.JPG)
 <br/>
 
 ### Fetch Stage:
+
 Fetch stage Start initializing the the exceptions, interrupts and code addresses from the instruction memory and store the address of the code in the PC register and keep adding 2 bytes on the PC register every clock cycle if the instruction does not require offset otherwise we add 4 bytes to skip the next 16 bits, used as offset.
 
 ### Decode Stage:
+
 The decode stage consists of two main parts, the **register file** and the **control unit**.
 
 ##### Register file:
@@ -64,7 +67,16 @@ the control unit is responsible for firing several control signals according to 
 ### Excution Stage:
 
 ##### ALU:
-This a simple 5-stage pipelined processor implementation in VHDL, based on **Harvard architecture** (Program and data memories are separated). This also includes a simple parser (written in python) to convert assembly code into a binary memory file.
+
+The ALU Part is responsible for 2-Operand Operations, 1-Operand Arithmatic Operations (INC, NOT) and for Load & Store address calculations.There are mainly 4 parts in this Design:
+
+1. **ALU Control**: Uses opcode as an input and outputs **ALU control signals** which determine how the ALU works.
+
+2. **ALU Compute**: Uses ALU control signals & Read Data as input and uses Read Data from Decoding to produce **ALU output**.
+
+3. **ALU to Flags**: Determines how the current ALU computation affects flags & if it should.
+
+4. **Full Forwarding Unit**: Uses Stored "Rsrc & Rdst"s in buffers to forward data from Memory stage or Execution Stage to current Execution in the event of any **Data Hazards**.
 
 ##### Branching:
 
@@ -113,9 +125,6 @@ In write back stage according to the MemtoReg signal it whether writes data from
 
 It also pass back the according regWrite signal and writeAddress of the instruction to the register file to avoid data hazard.
 
-
 # Schema
+
 <img width="5451" alt="Frame 1" src="https://user-images.githubusercontent.com/58189568/152680380-f9a9166b-64c7-41a3-ab12-301c30ce328b.png">
-
-
-
