@@ -9,7 +9,7 @@
     <img src="https://img.shields.io/badge/Language-VHDL-blue" alt="Language Badge" />
   </a>
   <a style="text-decoration:none" >
-    <img src="https://img.shields.io/badge/Simulation Tool-ModelSim-blue" alt="Simulation Tool Badge" />
+    <img src="https://img.shields.io/badge/Simulation Tool-ModelSim-green" alt="Simulation Tool Badge" />
   </a>
 </p>
 
